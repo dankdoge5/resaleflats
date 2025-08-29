@@ -4,8 +4,6 @@ import { PropertyCard } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { 
   TrendingUp, 
   Shield, 
@@ -21,8 +19,6 @@ import apartmentInterior from "@/assets/apartment-interior.jpg";
 import apartmentKitchen from "@/assets/apartment-kitchen.jpg";
 
 const Index = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const featuredProperties = [
     {
       id: "1",
@@ -104,12 +100,8 @@ const Index = () => {
                   <Home className="h-5 w-5" />
                   Browse Properties
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => user ? navigate('/dashboard') : navigate('/signup')}
-                >
-                  {user ? 'My Dashboard' : 'List Your Property'}
+                <Button variant="outline" size="lg">
+                  List Your Property
                 </Button>
               </div>
               
@@ -251,12 +243,8 @@ const Index = () => {
               <Button variant="hero" size="lg">
                 Start Searching Now
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => user ? navigate('/dashboard') : navigate('/signup')}
-              >
-                {user ? 'Go to Dashboard' : 'List Your Property'}
+              <Button variant="outline" size="lg">
+                List Your Property
               </Button>
             </div>
           </div>

@@ -1,20 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Building2, Menu, User, Heart, Bell, LogOut } from "lucide-react";
+import { Building2, Menu, User, Heart, Bell } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   isLoggedIn?: boolean;
 }
 
-export const Header = ({ isLoggedIn }: HeaderProps) => {
+export const Header = ({ isLoggedIn = false }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-  
-  // Use auth state if isLoggedIn prop is not provided
-  const userLoggedIn = isLoggedIn !== undefined ? isLoggedIn : !!user;
 
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
@@ -49,25 +42,22 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {userLoggedIn ? (
+            {isLoggedIn ? (
               <>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <Button variant="ghost" size="icon">
                   <Heart className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon">
                   <Bell className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={signOut} title="Sign Out">
-                  <LogOut className="h-5 w-5" />
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
-                <Button variant="trust" onClick={() => navigate('/signup')}>Sign Up</Button>
+                <Button variant="outline">Login</Button>
+                <Button variant="trust">Sign Up</Button>
               </>
             )}
           </div>
@@ -100,15 +90,12 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
                 Contact
               </a>
               <div className="flex gap-2 pt-2">
-                {userLoggedIn ? (
-                  <>
-                    <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>Dashboard</Button>
-                    <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
-                  </>
+                {isLoggedIn ? (
+                  <Button variant="ghost" size="sm">Profile</Button>
                 ) : (
                   <>
-                    <Button variant="outline" size="sm" onClick={() => navigate('/login')}>Login</Button>
-                    <Button variant="trust" size="sm" onClick={() => navigate('/signup')}>Sign Up</Button>
+                    <Button variant="outline" size="sm">Login</Button>
+                    <Button variant="trust" size="sm">Sign Up</Button>
                   </>
                 )}
               </div>

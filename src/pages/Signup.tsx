@@ -4,69 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Building2, Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Header } from "@/components/Header";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "@/hooks/use-toast";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { signUp, user } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { error } = await signUp(email, password, fullName);
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Signup Failed",
-          description: error.message,
-        });
-      } else {
-        toast({
-          title: "Account Created!",
-          description: "Please check your email to verify your account.",
-        });
-        navigate('/login');
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Signup Failed",
-        description: "An unexpected error occurred. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
@@ -89,7 +32,7 @@ const Signup = () => {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">
@@ -99,9 +42,6 @@ const Signup = () => {
                     type="text" 
                     placeholder="Enter your full name"
                     className="pl-10"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
                   />
                 </div>
               </div>
@@ -115,9 +55,6 @@ const Signup = () => {
                     type="email" 
                     placeholder="Enter your email"
                     className="pl-10"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
                   />
                 </div>
               </div>
@@ -131,8 +68,6 @@ const Signup = () => {
                     type="tel" 
                     placeholder="Enter your phone number"
                     className="pl-10"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </div>
@@ -146,9 +81,6 @@ const Signup = () => {
                     type={showPassword ? "text" : "password"} 
                     placeholder="Create a password"
                     className="pl-10 pr-10"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
                   />
                   <Button
                     type="button"
@@ -171,9 +103,6 @@ const Signup = () => {
                     type={showConfirmPassword ? "text" : "password"} 
                     placeholder="Confirm your password"
                     className="pl-10 pr-10"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
                   />
                   <Button
                     type="button"
@@ -188,7 +117,7 @@ const Signup = () => {
               </div>
               
               <div className="flex items-start space-x-2 text-sm">
-                <input type="checkbox" className="mt-1 rounded border-border" required />
+                <input type="checkbox" className="mt-1 rounded border-border" />
                 <span className="text-muted-foreground">
                   I agree to the{" "}
                   <a href="#" className="text-primary hover:underline">Terms of Service</a>
@@ -196,11 +125,11 @@ const Signup = () => {
                   <a href="#" className="text-primary hover:underline">Privacy Policy</a>
                 </span>
               </div>
+            </div>
             
-              <Button variant="hero" className="w-full" size="lg" type="submit" disabled={loading}>
-                {loading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
+            <Button variant="hero" className="w-full" size="lg">
+              Create Account
+            </Button>
             
             <div className="relative">
               <Separator />
