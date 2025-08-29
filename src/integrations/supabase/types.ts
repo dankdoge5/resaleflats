@@ -14,7 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          area_sqft: number | null
+          bathrooms: number
+          bedrooms: number
+          created_at: string
+          description: string | null
+          furnished_status: string | null
+          id: string
+          image_urls: string[] | null
+          is_active: boolean | null
+          location: string
+          owner_id: string
+          price: number
+          property_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area_sqft?: number | null
+          bathrooms: number
+          bedrooms: number
+          created_at?: string
+          description?: string | null
+          furnished_status?: string | null
+          id?: string
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location: string
+          owner_id: string
+          price: number
+          property_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area_sqft?: number | null
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string
+          description?: string | null
+          furnished_status?: string | null
+          id?: string
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location?: string
+          owner_id?: string
+          price?: number
+          property_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_properties: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
