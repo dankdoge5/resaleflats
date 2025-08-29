@@ -1,12 +1,276 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Header } from "@/components/Header";
+import { SearchBar } from "@/components/SearchBar";
+import { PropertyCard } from "@/components/PropertyCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  TrendingUp, 
+  Shield, 
+  Users, 
+  Star,
+  CheckCircle,
+  Home,
+  MapPin,
+  ArrowRight
+} from "lucide-react";
+import heroImage from "@/assets/hero-apartments.jpg";
+import apartmentInterior from "@/assets/apartment-interior.jpg";
+import apartmentKitchen from "@/assets/apartment-kitchen.jpg";
 
 const Index = () => {
+  const featuredProperties = [
+    {
+      id: "1",
+      title: "Modern 2BHK in Bandra West",
+      price: "85 Lakhs",
+      location: "Bandra West, Mumbai",
+      bedrooms: 2,
+      bathrooms: 2,
+      area: 950,
+      image: apartmentInterior,
+      type: "2BHK",
+      featured: true
+    },
+    {
+      id: "2",
+      title: "Luxury 3BHK in Koramangala",
+      price: "1.2 Crores", 
+      location: "Koramangala, Bangalore",
+      bedrooms: 3,
+      bathrooms: 3,
+      area: 1350,
+      image: apartmentKitchen,
+      type: "3BHK"
+    },
+    {
+      id: "3",
+      title: "Spacious 1BHK in Andheri",
+      price: "65 Lakhs",
+      location: "Andheri East, Mumbai", 
+      bedrooms: 1,
+      bathrooms: 1,
+      area: 650,
+      image: apartmentInterior,
+      type: "1BHK"
+    }
+  ];
+
+  const stats = [
+    { icon: Home, label: "Properties Listed", value: "25,000+" },
+    { icon: Users, label: "Happy Customers", value: "15,000+" },
+    { icon: MapPin, label: "Cities Covered", value: "50+" },
+    { icon: Star, label: "Average Rating", value: "4.8/5" }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt="Modern apartments"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <Badge className="bg-primary/10 text-primary border-primary/20">
+                  #1 Resale Property Platform
+                </Badge>
+                <h1 className="text-5xl font-bold text-foreground leading-tight">
+                  Find Your Perfect
+                  <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent"> Resale Home</span>
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Discover thousands of verified resale apartments from trusted sellers. 
+                  No broker hassles, transparent pricing, verified listings.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button variant="hero" size="lg" className="gap-2">
+                  <Home className="h-5 w-5" />
+                  Browse Properties
+                </Button>
+                <Button variant="outline" size="lg">
+                  List Your Property
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-8 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-success" />
+                  <span className="text-muted-foreground">Verified Listings</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-success" />
+                  <span className="text-muted-foreground">Secure Transactions</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:flex justify-center hidden">
+              <div className="bg-background/20 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
+                <SearchBar />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile Search */}
+      <section className="lg:hidden px-4 -mt-10 relative z-10">
+        <SearchBar />
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="bg-background rounded-xl p-6 shadow-md">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <stat.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Featured Properties
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Handpicked premium resale apartments from verified sellers across top cities
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {featuredProperties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <Button variant="outline" size="lg" className="gap-2">
+              View All Properties
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Why Choose ResaleFlats.in?
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              India's most trusted platform for resale apartments
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="shadow-md border-0 text-center">
+              <CardContent className="p-8">
+                <div className="bg-primary/10 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <Shield className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Verified Listings</h3>
+                <p className="text-muted-foreground">
+                  Every property is verified by our expert team to ensure authenticity and accuracy
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md border-0 text-center">
+              <CardContent className="p-8">
+                <div className="bg-success/10 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <TrendingUp className="h-8 w-8 text-success" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Best Prices</h3>
+                <p className="text-muted-foreground">
+                  Direct deals with owners mean better prices and no broker commissions
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md border-0 text-center">
+              <CardContent className="p-8">
+                <div className="bg-accent/10 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <Users className="h-8 w-8 text-accent" />
+                </div>
+                <h3 className="text-xl font-semibold mb-4">Expert Support</h3>
+                <p className="text-muted-foreground">
+                  Dedicated support team to guide you through your property journey
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10 rounded-2xl p-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Ready to Find Your Dream Home?
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Join thousands of happy homeowners who found their perfect resale apartment with us
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" size="lg">
+                Start Searching Now
+              </Button>
+              <Button variant="outline" size="lg">
+                List Your Property
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-card border-t border-border/50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="bg-gradient-to-r from-primary to-primary-glow p-2 rounded-lg">
+                <Home className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-foreground">ResaleFlats.in</h3>
+                <p className="text-xs text-muted-foreground">Find Your Perfect Home</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              © 2024 ResaleFlats.in. All rights reserved. 
+              Made with ❤️ for Indian homebuyers.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
