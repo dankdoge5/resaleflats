@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { useProperties } from "@/hooks/useProperties";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { 
   TrendingUp, 
   Shield, 
@@ -22,7 +24,18 @@ import apartmentKitchen from "@/assets/apartment-kitchen.jpg";
 
 const Index = () => {
   const { user } = useAuth();
+  const { properties, loading } = useProperties();
   const navigate = useNavigate();
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, [properties]);
+
+  const handleSearch = (filters: any) => {
+    // This will be handled by the useProperties hook automatically
+    console.log('Search filters:', filters);
+  };
   const featuredProperties = [
     {
       id: "1",
@@ -33,6 +46,7 @@ const Index = () => {
       bathrooms: 2,
       area: 950,
       image: apartmentInterior,
+      property_type: "apartment",
       type: "2BHK",
       featured: true
     },
@@ -45,6 +59,7 @@ const Index = () => {
       bathrooms: 3,
       area: 1350,
       image: apartmentKitchen,
+      property_type: "apartment",
       type: "3BHK"
     },
     {
@@ -56,6 +71,7 @@ const Index = () => {
       bathrooms: 1,
       area: 650,
       image: apartmentInterior,
+      property_type: "apartment",
       type: "1BHK"
     }
   ];
@@ -127,7 +143,7 @@ const Index = () => {
             
             <div className="lg:flex justify-center hidden">
               <div className="bg-background/20 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
-                <SearchBar />
+                <SearchBar onSearch={handleSearch} />
               </div>
             </div>
           </div>
@@ -136,7 +152,7 @@ const Index = () => {
 
       {/* Mobile Search */}
       <section className="lg:hidden px-4 -mt-10 relative z-10">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
       </section>
 
       {/* Stats Section */}
@@ -163,17 +179,38 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Featured Properties
+              {properties.length > 0 ? 'Latest Properties' : 'Featured Properties'}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Handpicked premium resale apartments from verified sellers across top cities
+              {properties.length > 0 
+                ? 'Browse the latest resale apartments from verified sellers'
+                : 'Handpicked premium resale apartments from verified sellers across top cities'
+              }
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
+            {loading ? (
+              // Loading skeletons
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-48 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="bg-muted rounded h-4 w-3/4"></div>
+                    <div className="bg-muted rounded h-4 w-1/2"></div>
+                    <div className="bg-muted rounded h-4 w-1/4"></div>
+                  </div>
+                </div>
+              ))
+            ) : properties.length > 0 ? (
+              properties.slice(0, 6).map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))
+            ) : (
+              featuredProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))
+            )}
           </div>
           
           <div className="text-center">

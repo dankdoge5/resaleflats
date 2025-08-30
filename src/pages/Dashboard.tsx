@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
+import { useProperties } from "@/hooks/useProperties";
+import { PropertyCard } from "@/components/PropertyCard";
+import { PropertyDialog } from "@/components/PropertyDialog";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -24,6 +27,7 @@ import {
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
+  const { userProperties, savedProperties, deleteProperty, loading: propertiesLoading } = useProperties();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,40 +53,12 @@ const Dashboard = () => {
   if (!user) {
     return null;
   }
-  const savedProperties = [
-    {
-      id: "1",
-      title: "Modern 2BHK in Bandra West",
-      location: "Bandra West, Mumbai",
-      price: "85 Lakhs",
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 950,
-      image: "/placeholder.svg"
-    },
-    {
-      id: "2", 
-      title: "Spacious 3BHK in Koramangala",
-      location: "Koramangala, Bangalore",
-      price: "1.2 Crores",
-      bedrooms: 3,
-      bathrooms: 3,
-      area: 1200,
-      image: "/placeholder.svg"
-    }
-  ];
 
-  const myListings = [
-    {
-      id: "1",
-      title: "Luxury 3BHK in Powai",
-      location: "Powai, Mumbai",
-      price: "1.5 Crores",
-      status: "Active",
-      views: 245,
-      inquiries: 12
+  const handleDeleteProperty = async (propertyId: string) => {
+    if (window.confirm('Are you sure you want to delete this property?')) {
+      await deleteProperty(propertyId);
     }
-  ];
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
@@ -105,10 +81,10 @@ const Dashboard = () => {
                 <div className="bg-primary/10 p-3 rounded-lg">
                   <Heart className="h-6 w-6 text-primary" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">12</p>
-                  <p className="text-sm text-muted-foreground">Saved Properties</p>
-                </div>
+                 <div>
+                   <p className="text-2xl font-bold text-foreground">{savedProperties.length}</p>
+                   <p className="text-sm text-muted-foreground">Saved Properties</p>
+                 </div>
               </div>
             </CardContent>
           </Card>
@@ -119,10 +95,10 @@ const Dashboard = () => {
                 <div className="bg-success/10 p-3 rounded-lg">
                   <Home className="h-6 w-6 text-success" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-foreground">3</p>
-                  <p className="text-sm text-muted-foreground">My Listings</p>
-                </div>
+                 <div>
+                   <p className="text-2xl font-bold text-foreground">{userProperties.length}</p>
+                   <p className="text-sm text-muted-foreground">My Listings</p>
+                 </div>
               </div>
             </CardContent>
           </Card>
@@ -175,103 +151,99 @@ const Dashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {savedProperties.map((property) => (
-                <Card key={property.id} className="shadow-md border-0 overflow-hidden">
-                  <div className="relative">
-                    <img 
-                      src={property.image} 
-                      alt={property.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      className="absolute top-2 right-2 bg-background/80"
-                    >
-                      <Heart className="h-4 w-4 fill-current text-destructive" />
-                    </Button>
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-2">{property.title}</h3>
-                    <div className="flex items-center text-muted-foreground text-sm mb-3">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {property.location}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center">
-                        <Bed className="h-4 w-4 mr-1" />
-                        {property.bedrooms}
-                      </div>
-                      <div className="flex items-center">
-                        <Bath className="h-4 w-4 mr-1" />
-                        {property.bathrooms}
-                      </div>
-                      <div className="flex items-center">
-                        <Square className="h-4 w-4 mr-1" />
-                        {property.area} sq ft
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-primary">₹{property.price}</span>
-                      <Button variant="outline" size="sm">View Details</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {savedProperties.length > 0 ? (
+                savedProperties.map((property) => (
+                  <PropertyCard 
+                    key={property.id} 
+                    property={property} 
+                    showSaveButton={false}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-muted-foreground">No saved properties yet. Start browsing to save your favorites!</p>
+                  <Button variant="outline" className="mt-4" onClick={() => navigate('/')}>
+                    Browse Properties
+                  </Button>
+                </div>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="listings" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold text-foreground">My Listings</h2>
-              <Button variant="hero">
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Listing
-              </Button>
+              <PropertyDialog mode="create">
+                <Button variant="hero">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Listing
+                </Button>
+              </PropertyDialog>
             </div>
             
             <div className="space-y-4">
-              {myListings.map((listing) => (
-                <Card key={listing.id} className="shadow-md border-0">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-semibold">{listing.title}</h3>
-                          <Badge variant={listing.status === 'Active' ? 'default' : 'secondary'}>
-                            {listing.status}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center text-muted-foreground text-sm">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {listing.location}
-                        </div>
-                        <div className="text-xl font-bold text-primary">₹{listing.price}</div>
-                      </div>
-                      
-                      <div className="text-right space-y-2">
-                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                          <div className="flex items-center">
-                            <Eye className="h-4 w-4 mr-1" />
-                            {listing.views} views
+              {userProperties.length > 0 ? (
+                userProperties.map((listing) => (
+                  <Card key={listing.id} className="shadow-md border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-semibold">{listing.title}</h3>
+                            <Badge variant={listing.is_active ? 'default' : 'secondary'}>
+                              {listing.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
                           </div>
-                          <div>
-                            {listing.inquiries} inquiries
+                          <div className="flex items-center text-muted-foreground text-sm">
+                            <MapPin className="h-4 w-4 mr-1" />
+                            {listing.location}
+                          </div>
+                          <div className="text-xl font-bold text-primary">
+                            ₹{listing.price >= 100 ? `${(listing.price / 100).toFixed(1)} Cr` : `${listing.price} L`}
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                        
+                        <div className="text-right space-y-2">
+                          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                            <div className="flex items-center">
+                              <Eye className="h-4 w-4 mr-1" />
+                              0 views
+                            </div>
+                            <div>
+                              0 inquiries
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <PropertyDialog mode="edit" property={listing}>
+                              <Button variant="outline" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </PropertyDialog>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDeleteProperty(listing.id)}
+                              disabled={propertiesLoading}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-4">You haven't listed any properties yet.</p>
+                  <PropertyDialog mode="create">
+                    <Button variant="hero">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Your First Listing
+                    </Button>
+                  </PropertyDialog>
+                </div>
+              )}
             </div>
           </TabsContent>
 
