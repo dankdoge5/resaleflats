@@ -132,7 +132,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_property_owner_contact: {
+        Args: { interested_user_id: string; property_owner_id: string }
+        Returns: {
+          full_name: string
+          phone: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
