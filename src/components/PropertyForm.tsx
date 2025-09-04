@@ -32,7 +32,10 @@ export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }
     onSubmit(formData);
   };
 
-  const handleChange = (field: keyof PropertyFormData, value: any) => {
+  const handleChange = <K extends keyof PropertyFormData>(
+    field: K,
+    value: PropertyFormData[K]
+  ) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

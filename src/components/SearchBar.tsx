@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, MapPin, Home, DollarSign } from "lucide-react";
-import { useProperties } from "@/hooks/useProperties";
+import { useProperties, type PropertyFilters } from "@/hooks/useProperties";
 
 interface SearchBarProps {
-  onSearch?: (filters: any) => void;
+  onSearch?: (filters: PropertyFilters) => void;
 }
 
 export const SearchBar = ({ onSearch }: SearchBarProps) => {
@@ -16,7 +16,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   const { fetchProperties } = useProperties();
 
   const handleSearch = () => {
-    const filters: any = {};
+    const filters: PropertyFilters = {};
     
     if (location) filters.location = location;
     if (propertyType) filters.property_type = propertyType;

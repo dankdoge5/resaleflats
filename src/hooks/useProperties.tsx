@@ -34,6 +34,13 @@ export interface PropertyFormData {
   image_urls?: string[];
 }
 
+export interface PropertyFilters {
+  location?: string;
+  property_type?: string;
+  min_price?: number;
+  max_price?: number;
+}
+
 export const useProperties = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [userProperties, setUserProperties] = useState<Property[]>([]);
@@ -42,12 +49,7 @@ export const useProperties = () => {
   const { user } = useAuth();
 
   // Fetch all active properties
-  const fetchProperties = async (filters?: {
-    location?: string;
-    property_type?: string;
-    min_price?: number;
-    max_price?: number;
-  }) => {
+  const fetchProperties = async (filters?: PropertyFilters) => {
     setLoading(true);
     try {
       let query = supabase

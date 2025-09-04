@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import { useProperties } from "@/hooks/useProperties";
+import { useProperties, type PropertyFilters } from "@/hooks/useProperties";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { 
@@ -32,7 +32,7 @@ const Index = () => {
     setFilteredProperties(properties);
   }, [properties]);
 
-  const handleSearch = (filters: any) => {
+  const handleSearch = (filters: PropertyFilters) => {
     // This will be handled by the useProperties hook automatically
     console.log('Search filters:', filters);
   };

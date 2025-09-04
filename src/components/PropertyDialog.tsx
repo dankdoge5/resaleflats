@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { PropertyForm } from './PropertyForm';
-import { PropertyFormData, useProperties } from '@/hooks/useProperties';
+import { PropertyFormData, useProperties, type Property } from '@/hooks/useProperties';
 
 interface PropertyDialogProps {
   children: React.ReactNode;
-  property?: any;
+  property?: Property;
   mode?: 'create' | 'edit';
 }
 
