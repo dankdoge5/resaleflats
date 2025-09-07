@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
+import { useCaptcha } from "@/hooks/useCaptcha";
 import { toast } from "@/hooks/use-toast";
 
 const Signup = () => {
@@ -20,6 +21,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp, user } = useAuth();
+  const { verifyCaptcha } = useCaptcha();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,7 +45,19 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const { error } = await signUp(email, password, fullName);
+      // Verify CAPTCHA first
+      const captchaVerified = await verifyCaptcha('signup');
+      
+      if (!captchaVerified) {
+        toast({
+          variant: "destructive",
+          title: "Security Check Failed",
+          description: "Please try again. If the problem persists, refresh the page.",
+        });
+        return;
+      }
+
+      const { error } = await signUp(email, password, fullName, captchaVerified);
       if (error) {
         toast({
           variant: "destructive",

@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          property_id: string
+          property_owner_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          property_id: string
+          property_owner_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          property_id?: string
+          property_owner_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -132,6 +173,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_approved_contact_info: {
+        Args: { contact_request_id: string }
+        Returns: {
+          full_name: string
+          phone: string
+        }[]
+      }
       get_property_owner_contact: {
         Args: { interested_user_id: string; property_owner_id: string }
         Returns: {

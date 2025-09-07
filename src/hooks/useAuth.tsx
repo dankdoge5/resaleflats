@@ -6,8 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, captchaVerified?: boolean) => Promise<{ error: any }>;
+  signIn: (email: string, password: string, captchaVerified?: boolean) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -38,7 +38,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, captchaVerified?: boolean) => {
+    // Validate CAPTCHA before proceeding
+    if (!captchaVerified) {
+      return { error: { message: 'CAPTCHA verification required' } };
+    }
+
     const redirectUrl = `${window.location.origin}/dashboard`;
     
     const { error } = await supabase.auth.signUp({
@@ -54,7 +59,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, captchaVerified?: boolean) => {
+    // Validate CAPTCHA before proceeding
+    if (!captchaVerified) {
+      return { error: { message: 'CAPTCHA verification required' } };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
