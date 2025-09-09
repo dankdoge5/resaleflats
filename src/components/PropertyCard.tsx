@@ -26,9 +26,10 @@ interface Property {
 interface PropertyCardProps {
   property: Property;
   showSaveButton?: boolean;
+  viewMode?: "grid" | "list";
 }
 
-export const PropertyCard = ({ property, showSaveButton = true }: PropertyCardProps) => {
+export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid" }: PropertyCardProps) => {
   const { toggleSaveProperty, isPropertySaved } = useProperties();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -39,6 +40,10 @@ export const PropertyCard = ({ property, showSaveButton = true }: PropertyCardPr
       return;
     }
     toggleSaveProperty(property.id);
+  };
+
+  const handleViewProperty = () => {
+    navigate(`/property/${property.id}`);
   };
 
   const formatPrice = (price: number | string) => {
@@ -68,8 +73,90 @@ export const PropertyCard = ({ property, showSaveButton = true }: PropertyCardPr
   };
 
   const isSaved = user ? isPropertySaved(property.id) : false;
+
+  if (viewMode === "list") {
+    return (
+      <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md">
+        <CardContent className="p-6">
+          <div className="flex gap-6">
+            <div className="relative w-48 h-32 flex-shrink-0">
+              <img 
+                src={getImageUrl()} 
+                alt={property.title}
+                className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500"
+              />
+              {property.featured && (
+                <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
+                  Featured
+                </Badge>
+              )}
+            </div>
+            
+            <div className="flex-1 space-y-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-card-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={handleViewProperty}>
+                    {property.title}
+                  </h3>
+                  <div className="flex items-center text-muted-foreground text-sm mt-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {property.location}
+                  </div>
+                </div>
+                <div className="text-2xl font-bold text-primary">
+                  ₹{formatPrice(property.price)}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center">
+                  <Bed className="h-4 w-4 mr-1" />
+                  {property.bedrooms} Beds
+                </div>
+                <div className="flex items-center">
+                  <Bath className="h-4 w-4 mr-1" />
+                  {property.bathrooms} Baths
+                </div>
+                <div className="flex items-center">
+                  <Square className="h-4 w-4 mr-1" />
+                  {getArea()} sq ft
+                </div>
+                <Badge variant="secondary">
+                  {getPropertyType()}
+                </Badge>
+              </div>
+              
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex gap-2">
+                  {showSaveButton && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={handleSaveProperty}
+                    >
+                      <Heart className={`h-4 w-4 ${isSaved ? 'fill-current text-destructive' : ''}`} />
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleViewProperty}>
+                    View Details
+                  </Button>
+                  <Button variant="default" size="sm" className="gap-1">
+                    <Phone className="h-4 w-4" />
+                    Contact
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md">
+    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md cursor-pointer" onClick={handleViewProperty}>
       <div className="relative overflow-hidden">
         <img 
           src={getImageUrl()} 
@@ -133,7 +220,7 @@ export const PropertyCard = ({ property, showSaveButton = true }: PropertyCardPr
             <div className="text-2xl font-bold text-primary">
               ₹{formatPrice(property.price)}
             </div>
-            <Button variant="outline" size="sm" className="gap-1">
+            <Button variant="outline" size="sm" className="gap-1" onClick={(e) => {e.stopPropagation(); /* Handle contact */}}>
               <Phone className="h-4 w-4" />
               Contact
             </Button>
