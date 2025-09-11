@@ -39,12 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, captchaVerified?: boolean) => {
-    // Validate CAPTCHA before proceeding
-    if (!captchaVerified) {
-      return { error: { message: 'CAPTCHA verification required' } };
-    }
-
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -60,11 +55,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string, captchaVerified?: boolean) => {
-    // Validate CAPTCHA before proceeding
-    if (!captchaVerified) {
-      return { error: { message: 'CAPTCHA verification required' } };
-    }
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
