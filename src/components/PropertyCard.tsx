@@ -46,6 +46,15 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
     navigate(`/property/${property.id}`);
   };
 
+  const handleContactOwner = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    // TODO: Implement contact functionality for authenticated users
+  };
+
   const formatPrice = (price: number | string) => {
     if (typeof price === 'string') return price;
     if (price >= 100) {
@@ -142,7 +151,7 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
                   <Button variant="outline" size="sm" onClick={handleViewProperty}>
                     View Details
                   </Button>
-                  <Button variant="default" size="sm" className="gap-1">
+                  <Button variant="default" size="sm" className="gap-1" onClick={handleContactOwner}>
                     <Phone className="h-4 w-4" />
                     Contact
                   </Button>
@@ -220,7 +229,7 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
             <div className="text-2xl font-bold text-primary">
               ₹{formatPrice(property.price)}
             </div>
-            <Button variant="outline" size="sm" className="gap-1" onClick={(e) => {e.stopPropagation(); /* Handle contact */}}>
+            <Button variant="outline" size="sm" className="gap-1" onClick={handleContactOwner}>
               <Phone className="h-4 w-4" />
               Contact
             </Button>

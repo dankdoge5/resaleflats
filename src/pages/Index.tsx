@@ -116,7 +116,7 @@ const Index = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button variant="hero" size="lg" className="gap-2">
+                <Button variant="hero" size="lg" className="gap-2" onClick={() => navigate('/properties')}>
                   <Home className="h-5 w-5" />
                   Browse Properties
                 </Button>
@@ -214,7 +214,7 @@ const Index = () => {
           </div>
           
           <div className="text-center">
-            <Button variant="outline" size="lg" className="gap-2">
+            <Button variant="outline" size="lg" className="gap-2" onClick={() => navigate('/properties')}>
               View All Properties
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -285,7 +285,7 @@ const Index = () => {
               Join thousands of happy homeowners who found their perfect resale apartment with us
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="lg">
+              <Button variant="hero" size="lg" onClick={() => navigate('/properties')}>
                 Start Searching Now
               </Button>
               <Button 
