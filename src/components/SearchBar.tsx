@@ -21,9 +21,14 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     if (location) filters.location = location;
     if (propertyType) filters.property_type = propertyType;
     if (budget) {
-      const [min, max] = budget.split('-').map(b => parseFloat(b));
-      if (min) filters.min_price = min;
-      if (max) filters.max_price = max;
+      if (budget === "100-") {
+        // ₹1Cr+ case
+        filters.min_price = 10000000; // 1 crore
+      } else {
+        const [min, max] = budget.split('-').map(b => b ? parseFloat(b) * 100000 : null); // Convert lakhs to actual amount
+        if (min) filters.min_price = min;
+        if (max) filters.max_price = max;
+      }
     }
 
     if (onSearch) {
