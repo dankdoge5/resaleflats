@@ -314,7 +314,7 @@ const Index = () => {
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              © 2024 ResaleFlats.in. All rights reserved. 
+              © 2025 ResaleFlats.in. All rights reserved. 
               Made with ❤️ for Indian homebuyers.
             </p>
           </div>
