@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      areas: {
+        Row: {
+          area_name: string
+          city: string
+          created_at: string
+          id: string
+          pincode: string | null
+          state: string
+        }
+        Insert: {
+          area_name: string
+          city: string
+          created_at?: string
+          id?: string
+          pincode?: string | null
+          state?: string
+        }
+        Update: {
+          area_name?: string
+          city?: string
+          created_at?: string
+          id?: string
+          pincode?: string | null
+          state?: string
+        }
+        Relationships: []
+      }
       contact_requests: {
         Row: {
           created_at: string
