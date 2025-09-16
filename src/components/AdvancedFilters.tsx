@@ -8,18 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 
 interface AdvancedFiltersProps {
-  filters: {
-    priceRange: [number, number];
-    propertyTypes: string[];
-    furnishedStatus: string[];
-    amenities: string[];
-    ageOfProperty: string;
-    parking: boolean;
-    balcony: boolean;
-    city: string;
-  };
   onFiltersChange: (filters: any) => void;
-  onClearFilters: () => void;
 }
 
 const AMENITIES = [
@@ -41,30 +30,60 @@ const CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Chennai', 'Hyderabad', 
 const PROPERTY_TYPES = ['apartment', 'villa', 'penthouse', 'studio', 'duplex'];
 const FURNISHED_STATUS = ['furnished', 'semi-furnished', 'unfurnished'];
 
-export const AdvancedFilters = ({ filters, onFiltersChange, onClearFilters }: AdvancedFiltersProps) => {
+export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
+  const [filters, setFilters] = useState({
+    priceRange: [0, 50000000] as [number, number],
+    propertyTypes: [] as string[],
+    furnishedStatus: [] as string[],
+    amenities: [] as string[],
+    ageOfProperty: '',
+    parking: false,
+    balcony: false,
+    city: '',
+  });
+
+  const updateFilters = (newFilters: any) => {
+    setFilters(newFilters);
+    onFiltersChange(newFilters);
+  };
+
+  const onClearFilters = () => {
+    const clearedFilters = {
+      priceRange: [0, 50000000] as [number, number],
+      propertyTypes: [] as string[],
+      furnishedStatus: [] as string[],
+      amenities: [] as string[],
+      ageOfProperty: '',
+      parking: false,
+      balcony: false,
+      city: '',
+    };
+    setFilters(clearedFilters);
+    onFiltersChange(clearedFilters);
+  };
   const handlePriceChange = (value: [number, number]) => {
-    onFiltersChange({ ...filters, priceRange: value });
+    updateFilters({ ...filters, priceRange: value });
   };
 
   const handlePropertyTypeToggle = (type: string) => {
     const updated = filters.propertyTypes.includes(type)
       ? filters.propertyTypes.filter(t => t !== type)
       : [...filters.propertyTypes, type];
-    onFiltersChange({ ...filters, propertyTypes: updated });
+    updateFilters({ ...filters, propertyTypes: updated });
   };
 
   const handleFurnishedStatusToggle = (status: string) => {
     const updated = filters.furnishedStatus.includes(status)
       ? filters.furnishedStatus.filter(s => s !== status)
       : [...filters.furnishedStatus, status];
-    onFiltersChange({ ...filters, furnishedStatus: updated });
+    updateFilters({ ...filters, furnishedStatus: updated });
   };
 
   const handleAmenityToggle = (amenity: string) => {
     const updated = filters.amenities.includes(amenity)
       ? filters.amenities.filter(a => a !== amenity)
       : [...filters.amenities, amenity];
-    onFiltersChange({ ...filters, amenities: updated });
+    updateFilters({ ...filters, amenities: updated });
   };
 
   const formatPrice = (price: number) => {
@@ -119,7 +138,7 @@ export const AdvancedFilters = ({ filters, onFiltersChange, onClearFilters }: Ad
         {/* City */}
         <div>
           <label className="text-sm font-medium mb-2 block">City</label>
-          <Select value={filters.city} onValueChange={(value) => onFiltersChange({ ...filters, city: value })}>
+          <Select value={filters.city} onValueChange={(value) => updateFilters({ ...filters, city: value })}>
             <SelectTrigger>
               <SelectValue placeholder="Select city" />
             </SelectTrigger>
@@ -171,7 +190,7 @@ export const AdvancedFilters = ({ filters, onFiltersChange, onClearFilters }: Ad
         {/* Property Age */}
         <div>
           <label className="text-sm font-medium mb-2 block">Age of Property</label>
-          <Select value={filters.ageOfProperty} onValueChange={(value) => onFiltersChange({ ...filters, ageOfProperty: value })}>
+          <Select value={filters.ageOfProperty} onValueChange={(value) => updateFilters({ ...filters, ageOfProperty: value })}>
             <SelectTrigger>
               <SelectValue placeholder="Select age" />
             </SelectTrigger>
@@ -192,7 +211,7 @@ export const AdvancedFilters = ({ filters, onFiltersChange, onClearFilters }: Ad
               <Checkbox
                 id="parking"
                 checked={filters.parking}
-                onCheckedChange={(checked) => onFiltersChange({ ...filters, parking: checked })}
+                onCheckedChange={(checked) => updateFilters({ ...filters, parking: checked })}
               />
               <label htmlFor="parking" className="text-sm">Car Parking</label>
             </div>
@@ -200,7 +219,7 @@ export const AdvancedFilters = ({ filters, onFiltersChange, onClearFilters }: Ad
               <Checkbox
                 id="balcony"
                 checked={filters.balcony}
-                onCheckedChange={(checked) => onFiltersChange({ ...filters, balcony: checked })}
+                onCheckedChange={(checked) => updateFilters({ ...filters, balcony: checked })}
               />
               <label htmlFor="balcony" className="text-sm">Balcony</label>
             </div>

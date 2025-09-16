@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Bed, Bath, Square, Heart, Phone } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Heart, Phone, Check } from "lucide-react";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -27,9 +27,11 @@ interface PropertyCardProps {
   property: Property;
   showSaveButton?: boolean;
   viewMode?: "grid" | "list";
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
-export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid" }: PropertyCardProps) => {
+export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid", isSelected = false, onSelect }: PropertyCardProps) => {
   const { toggleSaveProperty, isPropertySaved } = useProperties();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -84,11 +86,30 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
   const isSaved = user ? isPropertySaved(property.id) : false;
 
   if (viewMode === "list") {
-    return (
-      <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md">
-        <CardContent className="p-6">
-          <div className="flex gap-6">
-            <div className="relative w-48 h-32 flex-shrink-0">
+  return (
+    <Card className={`group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md ${
+      isSelected ? "ring-2 ring-primary" : ""
+    }`}>
+      <CardContent className="p-6">
+        <div className="flex gap-6">
+          {/* Selection Checkbox */}
+          {onSelect && (
+            <div 
+              className="flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect();
+              }}
+            >
+              <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${
+                isSelected ? "bg-primary border-primary" : "bg-white border-gray-300 hover:border-primary"
+              }`}>
+                {isSelected && <Check className="h-4 w-4 text-white" />}
+              </div>
+            </div>
+          )}
+          
+          <div className="relative w-48 h-32 flex-shrink-0" onClick={handleViewProperty}>
               <img 
                 src={getImageUrl()} 
                 alt={property.title}
@@ -165,7 +186,29 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
   }
 
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md cursor-pointer" onClick={handleViewProperty}>
+    <Card 
+      className={`group overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-0 shadow-md cursor-pointer ${
+        isSelected ? "ring-2 ring-primary" : ""
+      }`}
+    >
+      {/* Selection Checkbox */}
+      {onSelect && (
+        <div 
+          className="absolute top-2 left-2 z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+        >
+          <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+            isSelected ? "bg-primary border-primary" : "bg-white border-gray-300 hover:border-primary"
+          }`}>
+            {isSelected && <Check className="h-4 w-4 text-white" />}
+          </div>
+        </div>
+      )}
+      
+      <div onClick={handleViewProperty}>
       <div className="relative overflow-hidden">
         <img 
           src={getImageUrl()} 
@@ -235,7 +278,8 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
             </Button>
           </div>
         </div>
-      </CardContent>
+        </CardContent>
+      </div>
     </Card>
   );
 };

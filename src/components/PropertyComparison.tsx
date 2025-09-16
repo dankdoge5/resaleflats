@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,15 +7,50 @@ import { X, Scale, MapPin, Home, Bed, Bath, Square } from 'lucide-react';
 import { Property } from '@/hooks/useProperties';
 
 interface PropertyComparisonProps {
-  properties: Property[];
-  onRemoveProperty: (propertyId: string) => void;
-  onClearAll: () => void;
+  propertyIds: string[];
+  onClose: () => void;
 }
 
-export const PropertyComparison = ({ properties, onRemoveProperty, onClearAll }: PropertyComparisonProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const PropertyComparison = ({ propertyIds, onClose }: PropertyComparisonProps) => {
+  const [properties, setProperties] = useState<Property[]>([]);
 
-  if (properties.length === 0) return null;
+  // Mock fetch properties - replace with actual API call
+  React.useEffect(() => {
+    // In real app, fetch properties by IDs from your API
+    const mockProperties: Property[] = propertyIds.map(id => ({
+      id,
+      title: `Property ${id.slice(0, 8)}...`,
+      price: Math.floor(Math.random() * 10000000) + 1000000,
+      location: "Sample Location",
+      bedrooms: Math.floor(Math.random() * 4) + 1,
+      bathrooms: Math.floor(Math.random() * 3) + 1,
+      area_sqft: Math.floor(Math.random() * 1000) + 500,
+      property_type: "apartment",
+      furnished_status: "furnished",
+      description: "Sample property description",
+      owner_id: "sample-owner",
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      image_urls: [`https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}-${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 1000000)}?w=400`],
+    }));
+    setProperties(mockProperties);
+  }, [propertyIds]);
+
+  const handleRemoveProperty = (propertyId: string) => {
+    setProperties(prev => prev.filter(p => p.id !== propertyId));
+  };
+
+  const handleClearAll = () => {
+    setProperties([]);
+    onClose();
+  };
+
+  if (properties.length === 0) return (
+    <div className="text-center py-8">
+      <p className="text-muted-foreground">No properties selected for comparison.</p>
+    </div>
+  );
 
   const formatPrice = (price: number) => {
     if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)}Cr`;
@@ -27,7 +62,16 @@ export const PropertyComparison = ({ properties, onRemoveProperty, onClearAll }:
     return property.image_urls?.[0] || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400';
   };
 
-  const ComparisonTable = () => (
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Property Comparison</h3>
+          <Button variant="outline" size="sm" onClick={handleClearAll}>
+            <X className="h-4 w-4 mr-1" />
+            Clear All
+          </Button>
+        </div>
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
@@ -48,7 +92,7 @@ export const PropertyComparison = ({ properties, onRemoveProperty, onClearAll }:
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onRemoveProperty(property.id)}
+                    onClick={() => handleRemoveProperty(property.id)}
                     className="w-full"
                   >
                     <X className="h-4 w-4 mr-1" />
@@ -140,49 +184,8 @@ export const PropertyComparison = ({ properties, onRemoveProperty, onClearAll }:
           </tr>
         </tbody>
       </table>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Floating Compare Button */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="rounded-full shadow-lg">
-              <Scale className="h-5 w-5 mr-2" />
-              Compare ({properties.length})
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader className="flex flex-row items-center justify-between">
-              <DialogTitle>Property Comparison</DialogTitle>
-              <Button variant="outline" onClick={onClearAll}>
-                Clear All
-              </Button>
-            </DialogHeader>
-            <ComparisonTable />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Mobile Compare Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 md:hidden z-40">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Scale className="h-5 w-5" />
-            <span className="font-medium">{properties.length} properties selected</span>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onClearAll}>
-              Clear
-            </Button>
-            <Button size="sm" onClick={() => setIsOpen(true)}>
-              Compare
-            </Button>
-          </div>
         </div>
-      </div>
-    </>
+      </CardContent>
+    </Card>
   );
 };

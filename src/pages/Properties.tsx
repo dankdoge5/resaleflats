@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertyCard } from "@/components/PropertyCard";
+import { AdvancedFilters } from "@/components/AdvancedFilters";
+import { PropertyComparison } from "@/components/PropertyComparison";
+import { SavedSearches } from "@/components/SavedSearches";
+import { PropertyAlerts } from "@/components/PropertyAlerts";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useProperties } from "@/hooks/useProperties";
-import { SlidersHorizontal, Grid3X3, List, MapPin } from "lucide-react";
+import { SlidersHorizontal, Grid3X3, List, MapPin, GitCompare } from "lucide-react";
 
 const Properties = () => {
   const { properties, loading, fetchProperties } = useProperties();
@@ -15,6 +20,8 @@ const Properties = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<any>({});
+  const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
   
   const itemsPerPage = 12;
 
@@ -29,6 +36,19 @@ const Properties = () => {
 
   const clearFilters = () => {
     setFilters({});
+    setCurrentPage(1);
+  };
+
+  const handlePropertySelect = (propertyId: string) => {
+    setSelectedProperties(prev => 
+      prev.includes(propertyId) 
+        ? prev.filter(id => id !== propertyId)
+        : [...prev, propertyId].slice(0, 3) // Max 3 properties for comparison
+    );
+  };
+
+  const handleLoadSearch = (criteria: any) => {
+    setFilters(criteria);
     setCurrentPage(1);
   };
 
@@ -75,17 +95,47 @@ const Properties = () => {
           <SearchBar onSearch={handleSearch} />
         </div>
 
-        {/* Filters and Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="gap-2"
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-            </Button>
+        {/* Sidebar for User Features */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <div className="space-y-6">
+              <SavedSearches 
+                currentFilters={filters} 
+                onLoadSearch={handleLoadSearch}
+              />
+              <PropertyAlerts />
+            </div>
+          </div>
+          
+          <div className="lg:col-span-3">
+
+            {/* Filters and Controls */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      Advanced Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-80">
+                    <SheetHeader>
+                      <SheetTitle>Filter Properties</SheetTitle>
+                    </SheetHeader>
+                    <AdvancedFilters onFiltersChange={handleSearch} />
+                  </SheetContent>
+                </Sheet>
+
+                <Button
+                  variant="outline"
+                  onClick={() => setShowComparison(!showComparison)}
+                  className="gap-2"
+                  disabled={selectedProperties.length === 0}
+                >
+                  <GitCompare className="h-4 w-4" />
+                  Compare ({selectedProperties.length})
+                </Button>
             
             {hasActiveFilters && (
               <div className="flex items-center gap-2">
@@ -167,6 +217,8 @@ const Properties = () => {
                   key={property.id} 
                   property={property}
                   viewMode={viewMode}
+                  isSelected={selectedProperties.includes(property.id)}
+                  onSelect={() => handlePropertySelect(property.id)}
                 />
               ))}
             </div>
@@ -221,6 +273,18 @@ const Properties = () => {
             </Button>
           </div>
         )}
+
+            {/* Property Comparison */}
+            {showComparison && selectedProperties.length > 0 && (
+              <div className="mt-8">
+                <PropertyComparison 
+                  propertyIds={selectedProperties}
+                  onClose={() => setShowComparison(false)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
