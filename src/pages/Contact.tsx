@@ -74,7 +74,7 @@ const Contact = () => {
     {
       icon: MapPin,
       title: "Office Address",
-      details: ["ResaleFlats.in Headquarters", "Sector 18, Gurgaon, Haryana"],
+      details: ["ResaleFlats.in Headquarters", "Bangalore 560076"],
       description: "Visit us for property consultation"
     },
     {

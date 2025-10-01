@@ -49,23 +49,6 @@ const About = () => {
     }
   ];
 
-  const team = [
-    {
-      name: "Rajesh Kumar",
-      role: "Founder & CEO",
-      description: "15+ years in real estate technology with a vision to democratize property buying in India."
-    },
-    {
-      name: "Priya Sharma",
-      role: "Head of Operations",
-      description: "Expert in property verification and quality assurance with 12+ years of experience."
-    },
-    {
-      name: "Amit Singh",
-      role: "Technology Lead",
-      description: "Building scalable platforms that connect millions of property seekers with their dream homes."
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,12 +93,12 @@ const About = () => {
               <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Founded in 2020, ResaleFlats.in emerged from a simple observation: buying and selling 
+                  ResaleFlats.in emerged from a simple observation: buying and selling 
                   properties in India was unnecessarily complicated, expensive, and often unreliable.
                 </p>
                 <p>
-                  Our founders experienced firsthand the frustration of dealing with multiple brokers, 
-                  inflated prices, and questionable property listings. They envisioned a platform 
+                  We experienced firsthand the frustration of dealing with multiple brokers, 
+                  inflated prices, and questionable property listings. We envisioned a platform 
                   where property owners could directly connect with genuine buyers.
                 </p>
                 <p>
@@ -174,30 +157,6 @@ const About = () => {
           </div>
         </section>
 
-        {/* Leadership Team */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Meet Our Team</h2>
-            <p className="text-lg text-muted-foreground">
-              Passionate professionals dedicated to transforming real estate
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="text-center shadow-md border-0">
-                <CardContent className="p-6">
-                  <div className="bg-gradient-to-r from-primary to-primary-glow w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                  <p className="text-primary font-medium mb-3">{member.role}</p>
-                  <p className="text-sm text-muted-foreground">{member.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
 
         {/* Achievements */}
         <section className="mb-20">
