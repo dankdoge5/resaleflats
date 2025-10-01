@@ -53,7 +53,7 @@ const Index = () => {
     {
       id: "2",
       title: "Luxury 3BHK in Koramangala",
-      price: "1.2 Crores", 
+      price: "120 Lakhs", 
       location: "Koramangala, Bangalore",
       bedrooms: 3,
       bathrooms: 3,

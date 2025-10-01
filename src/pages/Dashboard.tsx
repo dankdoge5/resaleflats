@@ -199,7 +199,7 @@ const Dashboard = () => {
                             {listing.location}
                           </div>
                           <div className="text-xl font-bold text-primary">
-                            ₹{listing.price >= 100 ? `${(listing.price / 100).toFixed(1)} Cr` : `${listing.price} L`}
+                            ₹{listing.price} L
                           </div>
                         </div>
                         

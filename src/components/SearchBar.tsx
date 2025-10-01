@@ -22,8 +22,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
     if (propertyType) filters.property_type = propertyType;
     if (budget) {
       if (budget === "100-") {
-        // ₹1Cr+ case
-        filters.min_price = 10000000; // 1 crore
+        // ₹100L+ case
+        filters.min_price = 10000000; // 100 lakhs
       } else {
         const [min, max] = budget.split('-').map(b => b ? parseFloat(b) * 100000 : null); // Convert lakhs to actual amount
         if (min) filters.min_price = min;
@@ -77,8 +77,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             <SelectItem value="20-40">₹20L - ₹40L</SelectItem>
             <SelectItem value="40-60">₹40L - ₹60L</SelectItem>
             <SelectItem value="60-80">₹60L - ₹80L</SelectItem>
-            <SelectItem value="80-100">₹80L - ₹1Cr</SelectItem>
-            <SelectItem value="100-">₹1Cr+</SelectItem>
+            <SelectItem value="80-100">₹80L - ₹100L</SelectItem>
+            <SelectItem value="100-">₹100L+</SelectItem>
           </SelectContent>
         </Select>
         

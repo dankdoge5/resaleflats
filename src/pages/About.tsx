@@ -103,7 +103,7 @@ const About = () => {
                 </p>
                 <p>
                   Today, we've successfully facilitated thousands of property transactions, saved 
-                  crores in brokerage fees, and built India's most trusted resale property platform.
+                  millions in brokerage fees, and built India's most trusted resale property platform.
                 </p>
               </div>
               <div className="flex gap-4 mt-6">

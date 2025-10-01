@@ -107,9 +107,6 @@ const PropertyDetail = () => {
   }
 
   const formatPrice = (price: number) => {
-    if (price >= 100) {
-      return `${(price / 100).toFixed(1)} Cr`;
-    }
     return `${price} L`;
   };
 

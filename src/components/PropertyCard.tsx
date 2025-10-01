@@ -59,9 +59,6 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
 
   const formatPrice = (price: number | string) => {
     if (typeof price === 'string') return price;
-    if (price >= 100) {
-      return `${(price / 100).toFixed(1)} Cr`;
-    }
     return `${price} L`;
   };
 

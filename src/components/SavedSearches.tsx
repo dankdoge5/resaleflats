@@ -33,7 +33,6 @@ export const SavedSearches = ({ currentFilters, onLoadSearch }: SavedSearchesPro
     if (criteria.propertyTypes?.length > 0) parts.push(criteria.propertyTypes.join(', '));
     if (criteria.priceRange && (criteria.priceRange[0] > 0 || criteria.priceRange[1] < 50000000)) {
       const formatPrice = (price: number) => {
-        if (price >= 10000000) return `₹${(price / 10000000).toFixed(1)}Cr`;
         if (price >= 100000) return `₹${(price / 100000).toFixed(1)}L`;
         return `₹${price.toLocaleString()}`;
       };
