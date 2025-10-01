@@ -6,14 +6,36 @@ const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test k
 
 export const useCaptcha = () => {
   const verifyCaptcha = useCallback(async (action: string): Promise<boolean> => {
-    // For development/demo purposes, we'll skip CAPTCHA verification
-    // In production, implement proper reCAPTCHA v3 integration
     try {
-      console.log(`CAPTCHA verification for action: ${action} - skipped in demo mode`);
-      return true; // Always return true for demo
+      // Check if grecaptcha is loaded
+      if (!window.grecaptcha || !window.grecaptcha.execute) {
+        console.warn('reCAPTCHA not loaded, proceeding without verification');
+        return true; // Fallback for development
+      }
+
+      // Execute reCAPTCHA v3
+      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action });
+
+      // Verify token with edge function
+      const { data, error } = await supabase.functions.invoke('verify-captcha', {
+        body: { token },
+      });
+
+      if (error) {
+        console.error('CAPTCHA verification error:', error);
+        return false;
+      }
+
+      // Check score threshold (reCAPTCHA v3 returns a score between 0.0 and 1.0)
+      if (data?.success && data?.score >= 0.5) {
+        return true;
+      }
+
+      console.warn('CAPTCHA verification failed:', data);
+      return false;
     } catch (error) {
       console.error('CAPTCHA error:', error);
-      return true; // Still return true to allow authentication
+      return false;
     }
   }, []);
 

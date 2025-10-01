@@ -6,6 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PropertyFormData } from '@/hooks/useProperties';
+import { toast } from '@/hooks/use-toast';
+import { propertySchema } from '@/lib/validations';
 
 interface PropertyFormProps {
   onSubmit: (data: PropertyFormData) => void;
@@ -29,6 +31,18 @@ export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form data
+    const validation = propertySchema.safeParse(formData);
+    if (!validation.success) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Property Data",
+        description: validation.error.errors[0].message,
+      });
+      return;
+    }
+    
     onSubmit(formData);
   };
 

@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useContactRequests } from '@/hooks/useContactRequests';
+import { useRateLimit } from '@/hooks/useRateLimit';
+import { toast } from '@/hooks/use-toast';
+import { contactRequestSchema } from '@/lib/validations';
 
 interface ContactRequestDialogProps {
   children: React.ReactNode;
@@ -21,10 +24,36 @@ export const ContactRequestDialog = ({
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const { createContactRequest, loading } = useContactRequests();
+  const { checkRateLimit } = useRateLimit('contact-request', {
+    maxAttempts: 10,
+    windowMs: 60 * 60 * 1000, // 1 hour
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check rate limiting
+    const rateLimitCheck = checkRateLimit();
+    if (!rateLimitCheck.allowed) {
+      toast({
+        variant: "destructive",
+        title: "Too Many Requests",
+        description: `You've sent too many contact requests. Please try again in ${rateLimitCheck.remainingAttempts} attempts.`,
+      });
+      return;
+    }
     
+    // Validate message
+    const validation = contactRequestSchema.safeParse({ message });
+    if (!validation.success) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Message",
+        description: validation.error.errors[0].message,
+      });
+      return;
+    }
+
     const success = await createContactRequest(propertyId, propertyOwnerId, message);
     if (success) {
       setMessage('');

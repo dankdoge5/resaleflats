@@ -9,7 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useCaptcha } from "@/hooks/useCaptcha";
+import { useRateLimit } from "@/hooks/useRateLimit";
 import { toast } from "@/hooks/use-toast";
+import { signupSchema } from "@/lib/validations";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +25,11 @@ const Signup = () => {
   const { signUp, user } = useAuth();
   const { verifyCaptcha } = useCaptcha();
   const navigate = useNavigate();
+  const { checkRateLimit } = useRateLimit('signup', {
+    maxAttempts: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hours
+  });
 
   useEffect(() => {
     if (user) {
@@ -32,12 +39,33 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
+
+    // Check rate limiting
+    const rateLimitCheck = checkRateLimit();
+    if (!rateLimitCheck.allowed) {
+      const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
       toast({
         variant: "destructive",
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: "Too Many Attempts",
+        description: `Please try again after ${resetTime}`,
+      });
+      return;
+    }
+    
+    // Validate input
+    const validation = signupSchema.safeParse({ 
+      fullName, 
+      email, 
+      phone, 
+      password, 
+      confirmPassword 
+    });
+    
+    if (!validation.success) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Input",
+        description: validation.error.errors[0].message,
       });
       return;
     }
@@ -45,7 +73,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // Verify CAPTCHA first
+      // Verify CAPTCHA
       const captchaVerified = await verifyCaptcha('signup');
       
       if (!captchaVerified) {
@@ -62,7 +90,7 @@ const Signup = () => {
         toast({
           variant: "destructive",
           title: "Signup Failed",
-          description: error.message,
+          description: "Unable to create account. Please try again.",
         });
       } else {
         toast({
