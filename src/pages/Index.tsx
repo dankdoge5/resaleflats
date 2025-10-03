@@ -40,7 +40,7 @@ const Index = () => {
     {
       id: "1",
       title: "Modern 2BHK in Bandra West",
-      price: "85 Lakhs",
+      price: "55 Lakhs",
       location: "Bandra West, Mumbai",
       bedrooms: 2,
       bathrooms: 2,
@@ -52,8 +52,8 @@ const Index = () => {
     },
     {
       id: "2",
-      title: "Luxury 3BHK in Koramangala",
-      price: "120 Lakhs", 
+      title: "Spacious 3BHK in Koramangala",
+      price: "75 Lakhs", 
       location: "Koramangala, Bangalore",
       bedrooms: 3,
       bathrooms: 3,
@@ -64,8 +64,8 @@ const Index = () => {
     },
     {
       id: "3",
-      title: "Spacious 1BHK in Andheri",
-      price: "65 Lakhs",
+      title: "Cozy 1BHK in Andheri",
+      price: "38 Lakhs",
       location: "Andheri East, Mumbai", 
       bedrooms: 1,
       bathrooms: 1,
