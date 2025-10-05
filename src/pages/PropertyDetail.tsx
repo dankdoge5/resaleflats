@@ -40,7 +40,7 @@ interface PropertyDetail {
   furnished_status: string;
   description: string | null;
   is_active: boolean;
-  owner_id: string;
+  owner_id?: string; // Optional - excluded from public view for security
   created_at: string;
 }
 
@@ -58,11 +58,11 @@ const PropertyDetail = () => {
       if (!id) return;
       
       try {
+        // Use public_properties view for secure public access
         const { data, error } = await supabase
-          .from('properties')
+          .from('public_properties')
           .select('*')
           .eq('id', id)
-          .eq('is_active', true)
           .single();
 
         if (error) throw error;

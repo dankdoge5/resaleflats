@@ -16,7 +16,7 @@ export interface Property {
   furnished_status: string;
   description: string | null;
   is_active: boolean;
-  owner_id: string;
+  owner_id?: string; // Optional - excluded from public view for security
   created_at: string;
   updated_at: string;
 }
@@ -50,10 +50,10 @@ export const useProperties = () => {
   }) => {
     setLoading(true);
     try {
+      // Use public_properties view for secure public access (excludes owner_id)
       let query = supabase
-        .from('properties')
+        .from('public_properties')
         .select('*')
-        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (filters?.location) {

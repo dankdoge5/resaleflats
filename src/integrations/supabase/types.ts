@@ -80,6 +80,69 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contact_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "public_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: number
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: never
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: never
+          title?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: number
+          metadata: Json | null
+          sender_id: string
+          thread_id: number
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: never
+          metadata?: Json | null
+          sender_id: string
+          thread_id: number
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: never
+          metadata?: Json | null
+          sender_id?: string
+          thread_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -193,11 +256,100 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "public_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      thread_participants: {
+        Row: {
+          created_at: string | null
+          id: number
+          role: string | null
+          thread_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          role?: string | null
+          thread_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          role?: string | null
+          thread_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thread_participants_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      public_properties: {
+        Row: {
+          area_sqft: number | null
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string | null
+          description: string | null
+          furnished_status: string | null
+          id: string | null
+          image_urls: string[] | null
+          is_active: boolean | null
+          location: string | null
+          price: number | null
+          property_type: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          area_sqft?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          description?: string | null
+          furnished_status?: string | null
+          id?: string | null
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          property_type?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          area_sqft?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          description?: string | null
+          furnished_status?: string | null
+          id?: string | null
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          property_type?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_approved_contact_info: {

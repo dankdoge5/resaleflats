@@ -127,11 +127,10 @@ export const useAnalytics = () => {
   // Get popular properties (public)
   const getPopularProperties = async () => {
     try {
-      // In a real app, you would sort by actual view counts
+      // Use public_properties view for secure public access
       const { data, error } = await supabase
-        .from('properties')
+        .from('public_properties')
         .select('*')
-        .eq('is_active', true)
         .limit(10);
 
       if (error) throw error;
