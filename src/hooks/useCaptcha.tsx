@@ -2,15 +2,17 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 // reCAPTCHA v3 site key (public key - safe to expose)
-const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key
+// TODO: Replace with production key from https://www.google.com/recaptcha/admin
+// SECURITY WARNING: This is a TEST key that always passes - NOT for production use
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key - REPLACE ME
 
 export const useCaptcha = () => {
   const verifyCaptcha = useCallback(async (action: string): Promise<boolean> => {
     try {
       // Check if grecaptcha is loaded
       if (!window.grecaptcha || !window.grecaptcha.execute) {
-        console.warn('reCAPTCHA not loaded, proceeding without verification');
-        return true; // Fallback for development
+        console.error('reCAPTCHA not loaded - verification failed');
+        return false; // Do not bypass verification
       }
 
       // Execute reCAPTCHA v3

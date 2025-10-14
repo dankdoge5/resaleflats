@@ -139,6 +139,8 @@ export const useContactRequests = () => {
   };
 
   // Fetch received contact requests (requests for my properties)
+  // NOTE: Phone numbers are NOT included here for security - they are only
+  // accessible via getApprovedContactInfo() after approval
   const fetchReceivedRequests = async () => {
     if (!user) return;
 
@@ -148,7 +150,7 @@ export const useContactRequests = () => {
         .select(`
           *,
           property:properties(title, location),
-          requester_profile:profiles!contact_requests_requester_id_fkey(full_name, phone)
+          requester_profile:profiles!contact_requests_requester_id_fkey(full_name)
         `)
         .eq('property_owner_id', user.id)
         .order('created_at', { ascending: false });
