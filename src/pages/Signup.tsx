@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useCaptcha } from "@/hooks/useCaptcha";
-import { useRateLimit } from "@/hooks/useRateLimit";
+import { useServerRateLimit } from "@/hooks/useServerRateLimit";
 import { toast } from "@/hooks/use-toast";
 import { signupSchema } from "@/lib/validations";
 
@@ -24,12 +24,8 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const { signUp, user } = useAuth();
   const { verifyCaptcha } = useCaptcha();
+  const { checkRateLimit } = useServerRateLimit();
   const navigate = useNavigate();
-  const { checkRateLimit } = useRateLimit('signup', {
-    maxAttempts: 3,
-    windowMs: 60 * 60 * 1000, // 1 hour
-    blockDurationMs: 2 * 60 * 60 * 1000, // 2 hours
-  });
 
   useEffect(() => {
     if (user) {
@@ -40,18 +36,6 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check rate limiting
-    const rateLimitCheck = checkRateLimit();
-    if (!rateLimitCheck.allowed) {
-      const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
-      toast({
-        variant: "destructive",
-        title: "Too Many Attempts",
-        description: `Please try again after ${resetTime}`,
-      });
-      return;
-    }
-    
     // Validate input
     const validation = signupSchema.safeParse({ 
       fullName, 
@@ -73,6 +57,23 @@ const Signup = () => {
     setLoading(true);
 
     try {
+      // Check server-side rate limiting
+      const rateLimitCheck = await checkRateLimit(email, 'signup', {
+        maxAttempts: 3,
+        windowMs: 60 * 60 * 1000, // 1 hour
+        blockDurationMs: 2 * 60 * 60 * 1000, // 2 hours
+      });
+
+      if (!rateLimitCheck.allowed) {
+        const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
+        toast({
+          variant: "destructive",
+          title: "Too Many Attempts",
+          description: `Please try again after ${resetTime}`,
+        });
+        return;
+      }
+
       // Verify CAPTCHA
       const captchaVerified = await verifyCaptcha('signup');
       

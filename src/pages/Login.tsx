@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { useCaptcha } from "@/hooks/useCaptcha";
-import { useRateLimit } from "@/hooks/useRateLimit";
+import { useServerRateLimit } from "@/hooks/useServerRateLimit";
 import { toast } from "@/hooks/use-toast";
 import { loginSchema } from "@/lib/validations";
 
@@ -20,12 +20,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn, user } = useAuth();
   const { verifyCaptcha } = useCaptcha();
+  const { checkRateLimit } = useServerRateLimit();
   const navigate = useNavigate();
-  const { checkRateLimit, remainingAttempts } = useRateLimit('login', {
-    maxAttempts: 5,
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    blockDurationMs: 30 * 60 * 1000, // 30 minutes
-  });
 
   useEffect(() => {
     if (user) {
@@ -35,18 +31,6 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Check rate limiting
-    const rateLimitCheck = checkRateLimit();
-    if (!rateLimitCheck.allowed) {
-      const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
-      toast({
-        variant: "destructive",
-        title: "Too Many Attempts",
-        description: `Please try again after ${resetTime}`,
-      });
-      return;
-    }
 
     // Validate input
     const validation = loginSchema.safeParse({ email, password });
@@ -62,6 +46,23 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // Check server-side rate limiting
+      const rateLimitCheck = await checkRateLimit(email, 'login', {
+        maxAttempts: 5,
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        blockDurationMs: 30 * 60 * 1000, // 30 minutes
+      });
+
+      if (!rateLimitCheck.allowed) {
+        const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
+        toast({
+          variant: "destructive",
+          title: "Too Many Attempts",
+          description: `Please try again after ${resetTime}`,
+        });
+        return;
+      }
+
       // Verify CAPTCHA
       const captchaVerified = await verifyCaptcha('login');
       

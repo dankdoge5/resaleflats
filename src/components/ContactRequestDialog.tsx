@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useContactRequests } from '@/hooks/useContactRequests';
-import { useRateLimit } from '@/hooks/useRateLimit';
+import { useServerRateLimit } from '@/hooks/useServerRateLimit';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { contactRequestSchema } from '@/lib/validations';
 
@@ -24,21 +25,33 @@ export const ContactRequestDialog = ({
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const { createContactRequest, loading } = useContactRequests();
-  const { checkRateLimit } = useRateLimit('contact-request', {
-    maxAttempts: 10,
-    windowMs: 60 * 60 * 1000, // 1 hour
-  });
+  const { checkRateLimit } = useServerRateLimit();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check rate limiting
-    const rateLimitCheck = checkRateLimit();
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to send contact requests.",
+      });
+      return;
+    }
+
+    // Check server-side rate limiting
+    const rateLimitCheck = await checkRateLimit(user.id, 'contact_request', {
+      maxAttempts: 10,
+      windowMs: 60 * 60 * 1000, // 1 hour
+    });
+
     if (!rateLimitCheck.allowed) {
+      const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
       toast({
         variant: "destructive",
         title: "Too Many Requests",
-        description: `You've sent too many contact requests. Please try again in ${rateLimitCheck.remainingAttempts} attempts.`,
+        description: `You've sent too many contact requests. Please try again after ${resetTime}.`,
       });
       return;
     }
