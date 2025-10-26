@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ContactRequestDialog } from "@/components/ContactRequestDialog";
+import { PropertyDetailSkeleton } from "@/components/PropertyDetailSkeleton";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,12 +82,7 @@ const PropertyDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading property...</p>
-          </div>
-        </div>
+        <PropertyDetailSkeleton />
       </div>
     );
   }

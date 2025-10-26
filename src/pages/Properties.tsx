@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { SearchBar } from "@/components/SearchBar";
 import { PropertyCard } from "@/components/PropertyCard";
+import { PropertyCardSkeleton } from "@/components/PropertyCardSkeleton";
 import { AdvancedFilters } from "@/components/AdvancedFilters";
 import { PropertyComparison } from "@/components/PropertyComparison";
 import { SavedSearches } from "@/components/SavedSearches";
@@ -193,16 +194,13 @@ const Properties = () => {
 
         {/* Properties Grid/List */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={
+            viewMode === "grid" 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+              : "space-y-4"
+          }>
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-muted rounded-lg h-48 mb-4"></div>
-                <div className="space-y-2">
-                  <div className="bg-muted rounded h-4 w-3/4"></div>
-                  <div className="bg-muted rounded h-4 w-1/2"></div>
-                  <div className="bg-muted rounded h-4 w-1/4"></div>
-                </div>
-              </div>
+              <PropertyCardSkeleton key={i} />
             ))}
           </div>
         ) : paginatedProperties.length > 0 ? (

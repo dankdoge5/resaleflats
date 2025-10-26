@@ -10,6 +10,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
+import SavedProperties from "./pages/SavedProperties";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/properties" element={<Properties />} />
             <Route path="/property/:id" element={<PropertyDetail />} />
+            <Route path="/saved-properties" element={<SavedProperties />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

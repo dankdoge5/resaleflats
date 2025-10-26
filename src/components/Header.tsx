@@ -51,7 +51,7 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
           <div className="hidden md:flex items-center gap-3">
             {userLoggedIn ? (
               <>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <Button variant="ghost" size="icon" onClick={() => navigate('/saved-properties')} title="Saved Properties">
                   <Heart className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon">
@@ -87,28 +87,91 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border/50">
             <div className="flex flex-col space-y-3">
-              <a href="/" className="text-foreground hover:text-primary transition-colors font-medium">
+              <a 
+                href="/" 
+                className="text-foreground hover:text-primary transition-colors font-medium py-2 px-4 rounded-lg hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Home
               </a>
-              <a href="/properties" className="text-muted-foreground hover:text-primary transition-colors">
+              <a 
+                href="/properties" 
+                className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Properties
               </a>
-              <a href="/about" className="text-muted-foreground hover:text-primary transition-colors">
+              {userLoggedIn && (
+                <a 
+                  href="/saved-properties" 
+                  className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Saved Properties
+                </a>
+              )}
+              <a 
+                href="/about" 
+                className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 About
               </a>
-              <a href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+              <a 
+                href="/contact" 
+                className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Contact
               </a>
-              <div className="flex gap-2 pt-2">
+              <div className="flex flex-col gap-2 pt-2">
                 {userLoggedIn ? (
                   <>
-                    <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>Dashboard</Button>
-                    <Button variant="ghost" size="sm" onClick={signOut}>Sign Out</Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => {
+                        navigate('/dashboard');
+                        setIsMenuOpen(false);
+                      }}
+                      className="justify-start"
+                    >
+                      Dashboard
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="justify-start"
+                    >
+                      Sign Out
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" size="sm" onClick={() => navigate('/login')}>Login</Button>
-                    <Button variant="trust" size="sm" onClick={() => navigate('/signup')}>Sign Up</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        navigate('/login');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Login
+                    </Button>
+                    <Button 
+                      variant="trust" 
+                      size="sm" 
+                      onClick={() => {
+                        navigate('/signup');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Sign Up
+                    </Button>
                   </>
                 )}
               </div>
