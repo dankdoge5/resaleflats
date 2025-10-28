@@ -54,7 +54,7 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
                 <Button variant="ghost" size="icon" onClick={() => navigate('/saved-properties')} title="Saved Properties">
                   <Heart className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => navigate('/price-alerts')} title="Price Alerts">
                   <Bell className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
@@ -102,13 +102,22 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
                 Properties
               </a>
               {userLoggedIn && (
-                <a 
-                  href="/saved-properties" 
-                  className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Saved Properties
-                </a>
+                <>
+                  <a 
+                    href="/saved-properties" 
+                    className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Saved Properties
+                  </a>
+                  <a 
+                    href="/price-alerts" 
+                    className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Price Alerts
+                  </a>
+                </>
               )}
               <a 
                 href="/about" 

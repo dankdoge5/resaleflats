@@ -7,17 +7,18 @@ import { AdvancedFilters } from "@/components/AdvancedFilters";
 import { PropertyComparison } from "@/components/PropertyComparison";
 import { SavedSearches } from "@/components/SavedSearches";
 import { PropertyAlerts } from "@/components/PropertyAlerts";
+import { PropertyMap } from "@/components/PropertyMap";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useProperties } from "@/hooks/useProperties";
-import { SlidersHorizontal, Grid3X3, List, MapPin, GitCompare } from "lucide-react";
+import { SlidersHorizontal, Grid3X3, List, MapPin, GitCompare, Map } from "lucide-react";
 
 const Properties = () => {
   const { properties, loading, fetchProperties } = useProperties();
   const [sortBy, setSortBy] = useState("newest");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<any>({});
@@ -158,6 +159,7 @@ const Properties = () => {
                 variant={viewMode === "grid" ? "default" : "ghost"}
                 size="icon"
                 onClick={() => setViewMode("grid")}
+                title="Grid View"
               >
                 <Grid3X3 className="h-4 w-4" />
               </Button>
@@ -165,8 +167,17 @@ const Properties = () => {
                 variant={viewMode === "list" ? "default" : "ghost"}
                 size="icon"
                 onClick={() => setViewMode("list")}
+                title="List View"
               >
                 <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "map" ? "default" : "ghost"}
+                size="icon"
+                onClick={() => setViewMode("map")}
+                title="Map View"
+              >
+                <Map className="h-4 w-4" />
               </Button>
             </div>
 
@@ -192,7 +203,7 @@ const Properties = () => {
           </p>
         </div>
 
-        {/* Properties Grid/List */}
+        {/* Properties Grid/List/Map */}
         {loading ? (
           <div className={
             viewMode === "grid" 
@@ -203,6 +214,18 @@ const Properties = () => {
               <PropertyCardSkeleton key={i} />
             ))}
           </div>
+        ) : viewMode === "map" ? (
+          <PropertyMap 
+            properties={paginatedProperties.map(p => ({
+              id: p.id,
+              title: p.title,
+              location: p.location,
+              price: p.price,
+              bedrooms: p.bedrooms,
+              bathrooms: p.bathrooms,
+            }))}
+            onPropertyClick={(id) => window.open(`/property/${id}`, '_blank')}
+          />
         ) : paginatedProperties.length > 0 ? (
           <>
             <div className={

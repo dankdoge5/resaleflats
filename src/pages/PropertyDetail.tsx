@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ContactRequestDialog } from "@/components/ContactRequestDialog";
 import { PropertyDetailSkeleton } from "@/components/PropertyDetailSkeleton";
+import { PriceAlertDialog } from "@/components/PriceAlertDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ import {
   Phone,
   MessageCircle,
   Calendar,
+  Bell,
   Car,
   Shield,
   Wifi,
@@ -296,6 +298,17 @@ const PropertyDetail = () => {
                     <Calendar className="h-4 w-4" />
                     Schedule Visit
                   </Button>
+                  
+                  <PriceAlertDialog
+                    propertyId={property.id}
+                    currentPrice={property.price}
+                    propertyTitle={property.title}
+                  >
+                    <Button variant="secondary" className="w-full gap-2">
+                      <Bell className="h-4 w-4" />
+                      Set Price Alert
+                    </Button>
+                  </PriceAlertDialog>
                 </div>
                 
                 <div className="mt-4 p-4 bg-muted/50 rounded-lg">
