@@ -161,10 +161,9 @@ export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="apartment">Apartment</SelectItem>
-                  <SelectItem value="independent_house">Independent House</SelectItem>
-                  <SelectItem value="villa">Villa</SelectItem>
                   <SelectItem value="penthouse">Penthouse</SelectItem>
-                  <SelectItem value="studio">Studio</SelectItem>
+                  <SelectItem value="studio">Studio Apartment</SelectItem>
+                  <SelectItem value="duplex">Duplex Apartment</SelectItem>
                 </SelectContent>
               </Select>
             </div>

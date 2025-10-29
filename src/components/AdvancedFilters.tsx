@@ -27,7 +27,7 @@ const PROPERTY_AGES = [
 
 const CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Chennai', 'Hyderabad', 'Kolkata', 'Ahmedabad'];
 
-const PROPERTY_TYPES = ['apartment', 'villa', 'penthouse', 'studio', 'duplex'];
+const PROPERTY_TYPES = ['apartment', 'penthouse', 'studio', 'duplex'];
 const FURNISHED_STATUS = ['furnished', 'semi-furnished', 'unfurnished'];
 
 export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
