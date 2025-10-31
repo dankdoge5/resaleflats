@@ -10,7 +10,6 @@ import {
   Heart, 
   CheckCircle, 
   Star,
-  Award,
   Target,
   Globe,
   Home
@@ -157,34 +156,6 @@ const About = () => {
           </div>
         </section>
 
-
-        {/* Achievements */}
-        <section className="mb-20">
-          <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-0">
-            <CardContent className="p-12 text-center">
-              <div className="flex justify-center mb-6">
-                <Award className="h-16 w-16 text-primary" />
-              </div>
-              <h2 className="text-3xl font-bold text-foreground mb-4">
-                Recognized Excellence
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">PropTech Innovation Award</h3>
-                  <p className="text-muted-foreground text-sm">Best Real Estate Platform 2023</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Customer Choice Award</h3>
-                  <p className="text-muted-foreground text-sm">Highest Customer Satisfaction 2023</p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Startup Excellence</h3>
-                  <p className="text-muted-foreground text-sm">Fast Growing Startup 2022</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
 
         {/* CTA Section */}
         <section>
