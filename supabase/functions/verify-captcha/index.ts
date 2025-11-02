@@ -90,9 +90,9 @@ serve(async (req) => {
       // Continue anyway, but log for monitoring
     }
 
-    const recaptchaSecret = Deno.env.get('RECAPTCHA_SECRET_KEY');
-    if (!recaptchaSecret) {
-      console.error('RECAPTCHA_SECRET_KEY not configured');
+    const turnstileSecret = Deno.env.get('TURNSTILE_SECRET_KEY');
+    if (!turnstileSecret) {
+      console.error('TURNSTILE_SECRET_KEY not configured');
       return new Response(
         JSON.stringify({ success: false, error: 'Configuration error' }),
         { 
@@ -102,22 +102,25 @@ serve(async (req) => {
       );
     }
 
-    // Verify the CAPTCHA token with Google
-    const verifyResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    // Verify the CAPTCHA token with Cloudflare Turnstile
+    const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: `secret=${recaptchaSecret}&response=${token}`,
+      body: JSON.stringify({
+        secret: turnstileSecret,
+        response: token,
+        remoteip: clientIP,
+      }),
     });
 
     const verifyData = await verifyResponse.json();
     
     console.log('CAPTCHA verification result:', { 
-      success: verifyData.success, 
-      score: verifyData.score,
-      action: verifyData.action,
-      ip: clientIP
+      success: verifyData.success,
+      ip: clientIP,
+      challenge_ts: verifyData.challenge_ts
     });
 
     // Log suspicious patterns
@@ -127,14 +130,9 @@ serve(async (req) => {
       });
     }
 
-    // For reCAPTCHA v3, check both success and score
-    const isValid = verifyData.success && (verifyData.score >= 0.5);
-    
     return new Response(
       JSON.stringify({ 
-        success: isValid,
-        score: verifyData.score,
-        action: verifyData.action,
+        success: verifyData.success,
         remainingAttempts: rateLimit.remaining_attempts
       }),
       { 

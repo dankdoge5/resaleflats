@@ -1,40 +1,55 @@
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-// reCAPTCHA v3 site key (public key - safe to expose)
-// TODO: Replace with production key from https://www.google.com/recaptcha/admin
-// SECURITY WARNING: This is a TEST key that always passes - NOT for production use
-const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key - REPLACE ME
+// Cloudflare Turnstile site key (public key - safe to expose)
+// TODO: Replace with production key from https://dash.cloudflare.com/?to=/:account/turnstile
+// This is a test key that always passes - for production, get your key from Cloudflare
+const TURNSTILE_SITE_KEY = '1x00000000000000000000AA'; // Test key - visible CAPTCHA
 
 export const useCaptcha = () => {
   const verifyCaptcha = useCallback(async (action: string): Promise<boolean> => {
     try {
-      // Check if grecaptcha is loaded
-      if (!window.grecaptcha || !window.grecaptcha.execute) {
-        console.error('reCAPTCHA not loaded - verification failed');
-        return false; // Do not bypass verification
-      }
-
-      // Execute reCAPTCHA v3
-      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action });
-
-      // Verify token with edge function
-      const { data, error } = await supabase.functions.invoke('verify-captcha', {
-        body: { token },
-      });
-
-      if (error) {
-        console.error('CAPTCHA verification error:', error);
+      // Check if turnstile is loaded
+      if (!window.turnstile) {
+        console.error('Cloudflare Turnstile not loaded - verification failed');
         return false;
       }
 
-      // Check score threshold (reCAPTCHA v3 returns a score between 0.0 and 1.0)
-      if (data?.success && data?.score >= 0.5) {
-        return true;
-      }
+      return new Promise((resolve) => {
+        // Render Turnstile widget (invisible mode)
+        const widgetId = window.turnstile.render('#turnstile-widget', {
+          sitekey: TURNSTILE_SITE_KEY,
+          action: action,
+          callback: async (token: string) => {
+            // Verify token with edge function
+            const { data, error } = await supabase.functions.invoke('verify-captcha', {
+              body: { token },
+            });
 
-      console.warn('CAPTCHA verification failed:', data);
-      return false;
+            if (error) {
+              console.error('CAPTCHA verification error:', error);
+              resolve(false);
+              return;
+            }
+
+            if (data?.success) {
+              resolve(true);
+            } else {
+              console.warn('CAPTCHA verification failed:', data);
+              resolve(false);
+            }
+
+            // Clean up widget
+            if (widgetId) {
+              window.turnstile.remove(widgetId);
+            }
+          },
+          'error-callback': () => {
+            console.error('Turnstile error callback triggered');
+            resolve(false);
+          },
+        });
+      });
     } catch (error) {
       console.error('CAPTCHA error:', error);
       return false;
@@ -44,11 +59,20 @@ export const useCaptcha = () => {
   return { verifyCaptcha };
 };
 
-// Add types for reCAPTCHA
+// Add types for Cloudflare Turnstile
 declare global {
   interface Window {
-    grecaptcha: {
-      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    turnstile: {
+      render: (container: string | HTMLElement, options: {
+        sitekey: string;
+        action?: string;
+        callback?: (token: string) => void;
+        'error-callback'?: () => void;
+        theme?: 'light' | 'dark' | 'auto';
+        size?: 'normal' | 'compact';
+      }) => string | undefined;
+      remove: (widgetId: string) => void;
+      reset: (widgetId: string) => void;
     };
   }
 }

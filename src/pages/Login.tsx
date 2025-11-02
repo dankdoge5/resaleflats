@@ -194,6 +194,9 @@ const Login = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Hidden Turnstile widget container */}
+      <div id="turnstile-widget" style={{ position: 'fixed', top: '-9999px', left: '-9999px' }}></div>
     </div>
   );
 };
