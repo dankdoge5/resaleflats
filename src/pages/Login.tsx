@@ -8,8 +8,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
-import { useCaptcha } from "@/hooks/useCaptcha";
-import { useServerRateLimit } from "@/hooks/useServerRateLimit";
 import { toast } from "@/hooks/use-toast";
 import { loginSchema } from "@/lib/validations";
 
@@ -19,8 +17,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, user } = useAuth();
-  const { verifyCaptcha } = useCaptcha();
-  const { checkRateLimit } = useServerRateLimit();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,41 +42,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Check server-side rate limiting
-      const rateLimitCheck = await checkRateLimit(email, 'login', {
-        maxAttempts: 5,
-        windowMs: 15 * 60 * 1000, // 15 minutes
-        blockDurationMs: 30 * 60 * 1000, // 30 minutes
-      });
-
-      if (!rateLimitCheck.allowed) {
-        const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
-        toast({
-          variant: "destructive",
-          title: "Too Many Attempts",
-          description: `Please try again after ${resetTime}`,
-        });
-        return;
-      }
-
-      // Verify CAPTCHA
-      const captchaVerified = await verifyCaptcha('login');
+      // Attempt sign in directly
+      const { error } = await signIn(email, password);
       
-      if (!captchaVerified) {
-        toast({
-          variant: "destructive",
-          title: "Security Check Failed",
-          description: "Please try again. If the problem persists, refresh the page.",
-        });
-        return;
-      }
-
-      const { error } = await signIn(email, password, captchaVerified);
       if (error) {
+        console.error('Login error:', error);
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "Invalid email or password.",
+          description: error.message || "Invalid email or password.",
         });
       } else {
         toast({
@@ -90,6 +60,7 @@ const Login = () => {
         navigate('/dashboard');
       }
     } catch (error) {
+      console.error('Login exception:', error);
       toast({
         variant: "destructive",
         title: "Login Failed",
@@ -194,9 +165,6 @@ const Login = () => {
           </CardContent>
         </Card>
       </div>
-      
-      {/* Hidden Turnstile widget container */}
-      <div id="turnstile-widget" style={{ position: 'fixed', top: '-9999px', left: '-9999px' }}></div>
     </div>
   );
 };
