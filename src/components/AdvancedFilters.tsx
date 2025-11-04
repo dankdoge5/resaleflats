@@ -32,7 +32,7 @@ const FURNISHED_STATUS = ['furnished', 'semi-furnished', 'unfurnished'];
 
 export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
   const [filters, setFilters] = useState({
-    priceRange: [0, 50000000] as [number, number],
+    priceRange: [6000000, 30000000] as [number, number],
     propertyTypes: [] as string[],
     furnishedStatus: [] as string[],
     amenities: [] as string[],
@@ -49,7 +49,7 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
 
   const onClearFilters = () => {
     const clearedFilters = {
-      priceRange: [0, 50000000] as [number, number],
+      priceRange: [6000000, 30000000] as [number, number],
       propertyTypes: [] as string[],
       furnishedStatus: [] as string[],
       amenities: [] as string[],
@@ -93,7 +93,7 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
 
   const getActiveFiltersCount = () => {
     let count = 0;
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 50000000) count++;
+    if (filters.priceRange[0] > 6000000 || filters.priceRange[1] < 30000000) count++;
     if (filters.propertyTypes.length > 0) count++;
     if (filters.furnishedStatus.length > 0) count++;
     if (filters.amenities.length > 0) count++;
@@ -127,8 +127,8 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
           <Slider
             value={filters.priceRange}
             onValueChange={handlePriceChange}
-            max={50000000}
-            min={0}
+            max={30000000}
+            min={6000000}
             step={100000}
             className="w-full"
           />
