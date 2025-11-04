@@ -47,6 +47,16 @@ export const useProperties = () => {
     property_type?: string;
     min_price?: number;
     max_price?: number;
+    priceRange?: [number, number];
+    propertyTypes?: string[];
+    furnishedStatus?: string[];
+    bedrooms?: number[];
+    bathrooms?: number[];
+    amenities?: string[];
+    ageOfProperty?: string;
+    parking?: boolean;
+    balcony?: boolean;
+    city?: string;
   }) => {
     setLoading(true);
     try {
@@ -56,23 +66,62 @@ export const useProperties = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
+      // Location search
       if (filters?.location) {
         query = query.ilike('location', `%${filters.location}%`);
       }
+      
+      // City filter
+      if (filters?.city) {
+        query = query.ilike('location', `%${filters.city}%`);
+      }
+
+      // Property type filters (single or array)
       if (filters?.property_type) {
         query = query.eq('property_type', filters.property_type);
       }
-      if (filters?.min_price) {
-        query = query.gte('price', filters.min_price);
+      if (filters?.propertyTypes && filters.propertyTypes.length > 0) {
+        query = query.in('property_type', filters.propertyTypes);
       }
-      if (filters?.max_price) {
-        query = query.lte('price', filters.max_price);
+
+      // Furnished status filter
+      if (filters?.furnishedStatus && filters.furnishedStatus.length > 0) {
+        query = query.in('furnished_status', filters.furnishedStatus);
+      }
+
+      // Price range filters
+      if (filters?.priceRange) {
+        query = query.gte('price', filters.priceRange[0]).lte('price', filters.priceRange[1]);
+      } else {
+        if (filters?.min_price) {
+          query = query.gte('price', filters.min_price);
+        }
+        if (filters?.max_price) {
+          query = query.lte('price', filters.max_price);
+        }
+      }
+
+      // Bedrooms filter
+      if (filters?.bedrooms && filters.bedrooms.length > 0) {
+        query = query.in('bedrooms', filters.bedrooms);
+      }
+
+      // Bathrooms filter
+      if (filters?.bathrooms && filters.bathrooms.length > 0) {
+        query = query.in('bathrooms', filters.bathrooms);
       }
 
       const { data, error } = await query;
       
       if (error) throw error;
-      setProperties(data || []);
+      
+      // Client-side filtering for complex conditions
+      let filteredData = data || [];
+      
+      // Note: Amenities, parking, balcony, and ageOfProperty would need to be added to the database schema
+      // For now, we'll apply what we can at the database level
+      
+      setProperties(filteredData);
     } catch (error) {
       console.error('Error fetching properties:', error);
       toast({
