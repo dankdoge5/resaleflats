@@ -29,12 +29,16 @@ const CITIES = ['Mumbai', 'Delhi', 'Bangalore', 'Pune', 'Chennai', 'Hyderabad', 
 
 const PROPERTY_TYPES = ['apartment', 'penthouse', 'studio', 'duplex'];
 const FURNISHED_STATUS = ['furnished', 'semi-furnished', 'unfurnished'];
+const BEDROOMS = [1, 2, 3, 4, 5];
+const BATHROOMS = [1, 2, 3, 4];
 
 export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
   const [filters, setFilters] = useState({
     priceRange: [6000000, 30000000] as [number, number],
     propertyTypes: [] as string[],
     furnishedStatus: [] as string[],
+    bedrooms: [] as number[],
+    bathrooms: [] as number[],
     amenities: [] as string[],
     ageOfProperty: '',
     parking: false,
@@ -52,6 +56,8 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
       priceRange: [6000000, 30000000] as [number, number],
       propertyTypes: [] as string[],
       furnishedStatus: [] as string[],
+      bedrooms: [] as number[],
+      bathrooms: [] as number[],
       amenities: [] as string[],
       ageOfProperty: '',
       parking: false,
@@ -86,6 +92,20 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
     updateFilters({ ...filters, amenities: updated });
   };
 
+  const handleBedroomToggle = (bedroom: number) => {
+    const updated = filters.bedrooms.includes(bedroom)
+      ? filters.bedrooms.filter(b => b !== bedroom)
+      : [...filters.bedrooms, bedroom];
+    updateFilters({ ...filters, bedrooms: updated });
+  };
+
+  const handleBathroomToggle = (bathroom: number) => {
+    const updated = filters.bathrooms.includes(bathroom)
+      ? filters.bathrooms.filter(b => b !== bathroom)
+      : [...filters.bathrooms, bathroom];
+    updateFilters({ ...filters, bathrooms: updated });
+  };
+
   const formatPrice = (price: number) => {
     if (price >= 100000) return `₹${(price / 100000).toFixed(1)}L`;
     return `₹${price.toLocaleString()}`;
@@ -96,6 +116,8 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
     if (filters.priceRange[0] > 6000000 || filters.priceRange[1] < 30000000) count++;
     if (filters.propertyTypes.length > 0) count++;
     if (filters.furnishedStatus.length > 0) count++;
+    if (filters.bedrooms.length > 0) count++;
+    if (filters.bathrooms.length > 0) count++;
     if (filters.amenities.length > 0) count++;
     if (filters.ageOfProperty) count++;
     if (filters.parking) count++;
@@ -181,6 +203,40 @@ export const AdvancedFilters = ({ onFiltersChange }: AdvancedFiltersProps) => {
                 className="capitalize"
               >
                 {status.replace('-', ' ')}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bedrooms */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Bedrooms</label>
+          <div className="flex flex-wrap gap-2">
+            {BEDROOMS.map(bedroom => (
+              <Button
+                key={bedroom}
+                variant={filters.bedrooms.includes(bedroom) ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleBedroomToggle(bedroom)}
+              >
+                {bedroom}+ BHK
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bathrooms */}
+        <div>
+          <label className="text-sm font-medium mb-2 block">Bathrooms</label>
+          <div className="flex flex-wrap gap-2">
+            {BATHROOMS.map(bathroom => (
+              <Button
+                key={bathroom}
+                variant={filters.bathrooms.includes(bathroom) ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleBathroomToggle(bathroom)}
+              >
+                {bathroom}+
               </Button>
             ))}
           </div>
