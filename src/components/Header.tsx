@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building2, Menu, User, Heart, Bell, LogOut } from "lucide-react";
+import { Building2, Menu, User, Heart, Bell, LogOut, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +56,9 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/price-alerts')} title="Price Alerts">
                   <Bell className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => navigate('/messages')} title="Messages">
+                  <MessageCircle className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
                   <User className="h-5 w-5" />
@@ -116,6 +119,13 @@ export const Header = ({ isLoggedIn }: HeaderProps) => {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Price Alerts
+                  </a>
+                  <a 
+                    href="/messages" 
+                    className="text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-muted"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Messages
                   </a>
                 </>
               )}

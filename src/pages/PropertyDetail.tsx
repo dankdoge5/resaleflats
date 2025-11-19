@@ -10,7 +10,9 @@ import { PropertyDetailSkeleton } from "@/components/PropertyDetailSkeleton";
 import { PriceAlertDialog } from "@/components/PriceAlertDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
+import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -52,16 +54,34 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toggleSaveProperty, isPropertySaved } = useProperties();
+  const { createThread } = useMessages();
   const [property, setProperty] = useState<PropertyDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [startingConversation, setStartingConversation] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
       
       try {
-        // Use public_properties view for secure public access
+        // First try to get full property details if user owns it
+        if (user) {
+          const { data: ownedProperty } = await supabase
+            .from('properties')
+            .select('*')
+            .eq('id', id)
+            .eq('owner_id', user.id)
+            .single();
+
+          if (ownedProperty) {
+            setProperty(ownedProperty);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Otherwise use public view
         const { data, error } = await supabase
           .from('public_properties')
           .select('*')
@@ -69,7 +89,15 @@ const PropertyDetail = () => {
           .single();
 
         if (error) throw error;
-        setProperty(data);
+
+        // Fetch owner_id separately for messaging
+        const { data: propertyData } = await supabase
+          .from('properties')
+          .select('owner_id')
+          .eq('id', id)
+          .single();
+
+        setProperty({ ...data, owner_id: propertyData?.owner_id });
       } catch (error) {
         console.error('Error fetching property:', error);
       } finally {
@@ -124,6 +152,44 @@ const PropertyDetail = () => {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
+  const handleStartConversation = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to start a conversation",
+      });
+      navigate('/login');
+      return;
+    }
+
+    if (!property?.owner_id) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Unable to contact property owner",
+      });
+      return;
+    }
+
+    setStartingConversation(true);
+    try {
+      // Create thread with owner
+      const thread = await createThread(
+        `Property: ${property.title}`,
+        [property.owner_id]
+      );
+
+      if (thread) {
+        navigate('/messages');
+      }
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+    } finally {
+      setStartingConversation(false);
     }
   };
 
@@ -289,9 +355,14 @@ const PropertyDetail = () => {
                     </Button>
                   </ContactRequestDialog>
                   
-                  <Button variant="outline" className="w-full gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full gap-2"
+                    onClick={handleStartConversation}
+                    disabled={startingConversation || !property.owner_id}
+                  >
                     <MessageCircle className="h-4 w-4" />
-                    Send Message
+                    {startingConversation ? "Starting..." : "Send Message"}
                   </Button>
                   
                   <Button variant="outline" className="w-full gap-2">
