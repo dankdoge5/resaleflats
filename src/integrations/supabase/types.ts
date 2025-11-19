@@ -213,52 +213,64 @@ export type Database = {
       }
       properties: {
         Row: {
+          amenities: string[] | null
           area_sqft: number | null
           bathrooms: number
           bedrooms: number
           created_at: string
           description: string | null
           furnished_status: string | null
+          has_balcony: boolean | null
+          has_parking: boolean | null
           id: string
           image_urls: string[] | null
           is_active: boolean | null
           location: string
           owner_id: string
           price: number
+          property_age: string | null
           property_type: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          amenities?: string[] | null
           area_sqft?: number | null
           bathrooms: number
           bedrooms: number
           created_at?: string
           description?: string | null
           furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
           id?: string
           image_urls?: string[] | null
           is_active?: boolean | null
           location: string
           owner_id: string
           price: number
+          property_age?: string | null
           property_type?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          amenities?: string[] | null
           area_sqft?: number | null
           bathrooms?: number
           bedrooms?: number
           created_at?: string
           description?: string | null
           furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
           id?: string
           image_urls?: string[] | null
           is_active?: boolean | null
           location?: string
           owner_id?: string
           price?: number
+          property_age?: string | null
           property_type?: string | null
           title?: string
           updated_at?: string
@@ -370,49 +382,61 @@ export type Database = {
     Views: {
       public_properties: {
         Row: {
+          amenities: string[] | null
           area_sqft: number | null
           bathrooms: number | null
           bedrooms: number | null
           created_at: string | null
           description: string | null
           furnished_status: string | null
+          has_balcony: boolean | null
+          has_parking: boolean | null
           id: string | null
           image_urls: string[] | null
           is_active: boolean | null
           location: string | null
           price: number | null
+          property_age: string | null
           property_type: string | null
           title: string | null
           updated_at: string | null
         }
         Insert: {
+          amenities?: string[] | null
           area_sqft?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string | null
           description?: string | null
           furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
           id?: string | null
           image_urls?: string[] | null
           is_active?: boolean | null
           location?: string | null
           price?: number | null
+          property_age?: string | null
           property_type?: string | null
           title?: string | null
           updated_at?: string | null
         }
         Update: {
+          amenities?: string[] | null
           area_sqft?: number | null
           bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string | null
           description?: string | null
           furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
           id?: string | null
           image_urls?: string[] | null
           is_active?: boolean | null
           location?: string | null
           price?: number | null
+          property_age?: string | null
           property_type?: string | null
           title?: string | null
           updated_at?: string | null

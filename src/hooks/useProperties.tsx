@@ -19,6 +19,10 @@ export interface Property {
   owner_id?: string; // Optional - excluded from public view for security
   created_at: string;
   updated_at: string;
+  amenities?: string[] | null;
+  property_age?: string | null;
+  has_parking?: boolean | null;
+  has_balcony?: boolean | null;
 }
 
 export interface PropertyFormData {
@@ -32,6 +36,10 @@ export interface PropertyFormData {
   furnished_status: string;
   description?: string;
   image_urls?: string[];
+  amenities?: string[];
+  property_age?: string;
+  has_parking?: boolean;
+  has_balcony?: boolean;
 }
 
 export const useProperties = () => {
@@ -115,11 +123,35 @@ export const useProperties = () => {
       
       if (error) throw error;
       
-      // Client-side filtering for complex conditions
+      // Client-side filtering for complex conditions that need array operations
       let filteredData = data || [];
       
-      // Note: Amenities, parking, balcony, and ageOfProperty would need to be added to the database schema
-      // For now, we'll apply what we can at the database level
+      // Filter by amenities (property must have all selected amenities)
+      if (filters?.amenities && filters.amenities.length > 0) {
+        filteredData = filteredData.filter(property => {
+          if (!property.amenities || !Array.isArray(property.amenities)) return false;
+          return filters.amenities.every((amenity: string) => 
+            property.amenities.includes(amenity)
+          );
+        });
+      }
+      
+      // Filter by property age
+      if (filters?.ageOfProperty) {
+        filteredData = filteredData.filter(property => 
+          property.property_age === filters.ageOfProperty
+        );
+      }
+      
+      // Filter by parking
+      if (filters?.parking) {
+        filteredData = filteredData.filter(property => property.has_parking === true);
+      }
+      
+      // Filter by balcony
+      if (filters?.balcony) {
+        filteredData = filteredData.filter(property => property.has_balcony === true);
+      }
       
       setProperties(filteredData);
     } catch (error) {
