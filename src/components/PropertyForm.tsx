@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PropertyFormData } from '@/hooks/useProperties';
 import { toast } from '@/hooks/use-toast';
@@ -16,6 +17,12 @@ interface PropertyFormProps {
   mode?: 'create' | 'edit';
 }
 
+const AMENITIES = [
+  'Swimming Pool', 'Gym/Fitness Center', '24/7 Security', 'Power Backup', 
+  'Lift/Elevator', 'Club House', 'Garden/Park', 'Children Play Area',
+  'Intercom', 'Maintenance Staff', 'Water Supply', 'Car Parking'
+];
+
 export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }: PropertyFormProps) => {
   const [formData, setFormData] = useState<PropertyFormData>({
     title: initialData?.title || '',
@@ -27,6 +34,10 @@ export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }
     property_type: initialData?.property_type || 'apartment',
     furnished_status: initialData?.furnished_status || 'unfurnished',
     description: initialData?.description || '',
+    amenities: initialData?.amenities || [],
+    property_age: initialData?.property_age || '',
+    has_parking: initialData?.has_parking || false,
+    has_balcony: initialData?.has_balcony || false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -195,6 +206,81 @@ export const PropertyForm = ({ onSubmit, initialData, loading, mode = 'create' }
               placeholder="Describe your property features, amenities, etc."
               rows={4}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="property_age">Property Age</Label>
+            <Select 
+              value={formData.property_age} 
+              onValueChange={(value) => handleChange('property_age', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select property age" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new">New/Under Construction</SelectItem>
+                <SelectItem value="0-1">0-1 Years</SelectItem>
+                <SelectItem value="1-5">1-5 Years</SelectItem>
+                <SelectItem value="5-10">5-10 Years</SelectItem>
+                <SelectItem value="10+">10+ Years</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Amenities</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {AMENITIES.map((amenity) => (
+                <div key={amenity} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={amenity}
+                    checked={formData.amenities?.includes(amenity)}
+                    onCheckedChange={(checked) => {
+                      const updated = checked
+                        ? [...(formData.amenities || []), amenity]
+                        : (formData.amenities || []).filter(a => a !== amenity);
+                      handleChange('amenities', updated);
+                    }}
+                  />
+                  <label
+                    htmlFor={amenity}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {amenity}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="has_parking"
+                checked={formData.has_parking}
+                onCheckedChange={(checked) => handleChange('has_parking', checked)}
+              />
+              <label
+                htmlFor="has_parking"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Has Parking
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="has_balcony"
+                checked={formData.has_balcony}
+                onCheckedChange={(checked) => handleChange('has_balcony', checked)}
+              />
+              <label
+                htmlFor="has_balcony"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Has Balcony
+              </label>
+            </div>
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">
