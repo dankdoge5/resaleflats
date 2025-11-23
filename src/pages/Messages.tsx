@@ -1,19 +1,44 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { MessageThread } from '@/components/MessageThread';
 import { useMessages } from '@/hooks/useMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, ArrowLeft } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Search } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Messages = () => {
   const { user, loading: authLoading } = useAuth();
   const { threads, loading } = useMessages();
   const [selectedThreadId, setSelectedThreadId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Filter threads based on search term
+  const filteredThreads = useMemo(() => {
+    if (!searchTerm.trim()) return threads;
+
+    const search = searchTerm.toLowerCase();
+    return threads.filter((thread) => {
+      // Search by title/property name
+      if (thread.title?.toLowerCase().includes(search)) return true;
+
+      // Search by participant name
+      if (thread.participants?.some((p) => p.full_name?.toLowerCase().includes(search))) return true;
+
+      // Search by date
+      const formattedDate = format(new Date(thread.created_at), 'MMM d, yyyy').toLowerCase();
+      if (formattedDate.includes(search)) return true;
+
+      // Search by last message content
+      if (thread.last_message?.content.toLowerCase().includes(search)) return true;
+
+      return false;
+    });
+  }, [threads, searchTerm]);
 
   if (authLoading) {
     return (
@@ -34,7 +59,7 @@ const Messages = () => {
     return null;
   }
 
-  const selectedThread = threads.find((t) => t.id === selectedThreadId);
+  const selectedThread = filteredThreads.find((t) => t.id === selectedThreadId);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,21 +80,36 @@ const Messages = () => {
           {/* Thread List */}
           <Card className="col-span-1 p-4 overflow-hidden flex flex-col">
             <h2 className="text-lg font-semibold mb-4">Conversations</h2>
+            
+            {/* Search Input */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search by property, participant, or date..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
             {loading ? (
               <div className="flex items-center justify-center h-full">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-            ) : threads.length === 0 ? (
+            ) : filteredThreads.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <MessageCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No conversations yet</p>
+                <p className="text-muted-foreground">
+                  {searchTerm ? 'No conversations found' : 'No conversations yet'}
+                </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Start a conversation from a property listing
+                  {searchTerm ? 'Try a different search term' : 'Start a conversation from a property listing'}
                 </p>
               </div>
             ) : (
               <div className="space-y-2 overflow-y-auto">
-                {threads.map((thread) => (
+                {filteredThreads.map((thread) => (
                   <button
                     key={thread.id}
                     onClick={() => setSelectedThreadId(thread.id)}

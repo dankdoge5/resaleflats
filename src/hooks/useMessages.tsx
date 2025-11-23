@@ -12,12 +12,17 @@ export interface Message {
   metadata?: any;
 }
 
+export interface ThreadParticipant {
+  user_id: string;
+  full_name?: string;
+}
+
 export interface MessageThread {
   id: number;
   created_by: string;
   created_at: string;
   title: string | null;
-  participants?: any[];
+  participants?: ThreadParticipant[];
   last_message?: Message;
 }
 
@@ -42,9 +47,10 @@ export const useMessages = () => {
 
       if (threadError) throw threadError;
 
-      // Fetch last message for each thread
+      // Fetch last message and participant details for each thread
       const threadsWithMessages = await Promise.all(
         (threadData || []).map(async (thread) => {
+          // Fetch last message
           const { data: messages } = await supabase
             .from('messages')
             .select('*')
@@ -52,9 +58,33 @@ export const useMessages = () => {
             .order('created_at', { ascending: false })
             .limit(1);
 
+          // Fetch all participants for this thread
+          const { data: participantData } = await supabase
+            .from('thread_participants')
+            .select('user_id')
+            .eq('thread_id', thread.id);
+
+          // Fetch profile details for participants
+          const participants: ThreadParticipant[] = [];
+          if (participantData) {
+            for (const p of participantData) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('user_id', p.user_id)
+                .maybeSingle();
+              
+              participants.push({
+                user_id: p.user_id,
+                full_name: profile?.full_name || 'Unknown User',
+              });
+            }
+          }
+
           return {
             ...thread,
             last_message: messages?.[0] || null,
+            participants,
           };
         })
       );
