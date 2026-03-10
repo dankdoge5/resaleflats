@@ -11,7 +11,7 @@ import { PriceAlertDialog } from "@/components/PriceAlertDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { useMessages } from "@/hooks/useMessages";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from '@/integrations/supabase/helpers';
 import { toast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
