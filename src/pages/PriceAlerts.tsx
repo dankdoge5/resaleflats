@@ -8,7 +8,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Trash2, ArrowLeft, TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/supabase/helpers';
+
 
 interface PropertyInfo {
   id: string;
@@ -28,7 +29,7 @@ const PriceAlerts = () => {
       if (alerts.length === 0) return;
 
       const propertyIds = [...new Set(alerts.map(alert => alert.property_id))];
-      const { data } = await supabase
+      const { data } = await db
         .from('public_properties')
         .select('id, title, price, location')
         .in('id', propertyIds);

@@ -11,7 +11,7 @@ import { PriceAlertDialog } from "@/components/PriceAlertDialog";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { useMessages } from "@/hooks/useMessages";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from '@/integrations/supabase/helpers';
 import { toast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
@@ -67,7 +67,7 @@ const PropertyDetail = () => {
       try {
         // First try to get full property details if user owns it
         if (user) {
-          const { data: ownedProperty } = await supabase
+          const { data: ownedProperty } = await db
             .from('properties')
             .select('*')
             .eq('id', id)
@@ -82,7 +82,7 @@ const PropertyDetail = () => {
         }
 
         // Otherwise use public view
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from('public_properties')
           .select('*')
           .eq('id', id)
@@ -91,7 +91,7 @@ const PropertyDetail = () => {
         if (error) throw error;
 
         // Fetch owner_id separately for messaging
-        const { data: propertyData } = await supabase
+        const { data: propertyData } = await db
           .from('properties')
           .select('owner_id')
           .eq('id', id)

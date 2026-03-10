@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/supabase/helpers';
 import { useAuth } from './useAuth';
 import { toast } from '@/hooks/use-toast';
 
@@ -16,7 +16,7 @@ export interface Property {
   furnished_status: string;
   description: string | null;
   is_active: boolean;
-  owner_id?: string; // Optional - excluded from public view for security
+  owner_id?: string;
   created_at: string;
   updated_at: string;
   amenities?: string[] | null;
@@ -49,7 +49,6 @@ export const useProperties = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  // Fetch all active properties
   const fetchProperties = async (filters?: {
     location?: string;
     property_type?: string;
@@ -68,282 +67,180 @@ export const useProperties = () => {
   }) => {
     setLoading(true);
     try {
-      // Use public_properties view for secure public access (excludes owner_id)
-      let query = supabase
+      let query = db
         .from('public_properties')
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Location search
       if (filters?.location) {
         query = query.ilike('location', `%${filters.location}%`);
       }
-      
-      // City filter
       if (filters?.city) {
         query = query.ilike('location', `%${filters.city}%`);
       }
-
-      // Property type filters (single or array)
       if (filters?.property_type) {
         query = query.eq('property_type', filters.property_type);
       }
       if (filters?.propertyTypes && filters.propertyTypes.length > 0) {
         query = query.in('property_type', filters.propertyTypes);
       }
-
-      // Furnished status filter
       if (filters?.furnishedStatus && filters.furnishedStatus.length > 0) {
         query = query.in('furnished_status', filters.furnishedStatus);
       }
-
-      // Price range filters
       if (filters?.priceRange) {
         query = query.gte('price', filters.priceRange[0]).lte('price', filters.priceRange[1]);
       } else {
-        if (filters?.min_price) {
-          query = query.gte('price', filters.min_price);
-        }
-        if (filters?.max_price) {
-          query = query.lte('price', filters.max_price);
-        }
+        if (filters?.min_price) query = query.gte('price', filters.min_price);
+        if (filters?.max_price) query = query.lte('price', filters.max_price);
       }
-
-      // Bedrooms filter
       if (filters?.bedrooms && filters.bedrooms.length > 0) {
         query = query.in('bedrooms', filters.bedrooms);
       }
-
-      // Bathrooms filter
       if (filters?.bathrooms && filters.bathrooms.length > 0) {
         query = query.in('bathrooms', filters.bathrooms);
       }
 
       const { data, error } = await query;
-      
       if (error) throw error;
-      
-      // Client-side filtering for complex conditions that need array operations
+
       let filteredData = data || [];
-      
-      // Filter by amenities (property must have all selected amenities)
       if (filters?.amenities && filters.amenities.length > 0) {
-        filteredData = filteredData.filter(property => {
+        filteredData = filteredData.filter((property: any) => {
           if (!property.amenities || !Array.isArray(property.amenities)) return false;
-          return filters.amenities.every((amenity: string) => 
-            property.amenities.includes(amenity)
-          );
+          return filters.amenities!.every((amenity: string) => property.amenities.includes(amenity));
         });
       }
-      
-      // Filter by property age
       if (filters?.ageOfProperty) {
-        filteredData = filteredData.filter(property => 
-          property.property_age === filters.ageOfProperty
-        );
+        filteredData = filteredData.filter((property: any) => property.property_age === filters.ageOfProperty);
       }
-      
-      // Filter by parking
       if (filters?.parking) {
-        filteredData = filteredData.filter(property => property.has_parking === true);
+        filteredData = filteredData.filter((property: any) => property.has_parking === true);
       }
-      
-      // Filter by balcony
       if (filters?.balcony) {
-        filteredData = filteredData.filter(property => property.has_balcony === true);
+        filteredData = filteredData.filter((property: any) => property.has_balcony === true);
       }
-      
+
       setProperties(filteredData);
     } catch (error) {
       console.error('Error fetching properties:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch properties",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to fetch properties", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch user's properties
   const fetchUserProperties = async () => {
     if (!user) return;
-    
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('properties')
         .select('*')
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
-      
       if (error) throw error;
       setUserProperties(data || []);
     } catch (error) {
       console.error('Error fetching user properties:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch your properties",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to fetch your properties", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch saved properties
   const fetchSavedProperties = async () => {
     if (!user) return;
-    
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('saved_properties')
-        .select(`
-          property_id,
-          properties (*)
-        `)
+        .select(`property_id, properties (*)`)
         .eq('user_id', user.id);
-      
       if (error) throw error;
-      
-      const savedProps = data?.map(item => item.properties).filter(Boolean) || [];
+      const savedProps = data?.map((item: any) => item.properties).filter(Boolean) || [];
       setSavedProperties(savedProps as Property[]);
     } catch (error) {
       console.error('Error fetching saved properties:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch saved properties",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to fetch saved properties", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  // Create new property
   const createProperty = async (propertyData: PropertyFormData) => {
     if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to create a property",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "You must be logged in to create a property", variant: "destructive" });
       return null;
     }
-
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('properties')
-        .insert([{
-          ...propertyData,
-          owner_id: user.id
-        }])
+        .insert([{ ...propertyData, owner_id: user.id }])
         .select()
         .single();
-
       if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Property created successfully",
-      });
-      
+      toast({ title: "Success", description: "Property created successfully" });
       await fetchUserProperties();
       return data;
     } catch (error) {
       console.error('Error creating property:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create property",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to create property", variant: "destructive" });
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // Update property
   const updateProperty = async (id: string, updates: Partial<PropertyFormData>) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('properties')
         .update(updates)
         .eq('id', id)
         .eq('owner_id', user?.id)
         .select()
         .single();
-
       if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Property updated successfully",
-      });
-      
+      toast({ title: "Success", description: "Property updated successfully" });
       await fetchUserProperties();
       return data;
     } catch (error) {
       console.error('Error updating property:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update property",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to update property", variant: "destructive" });
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete property
   const deleteProperty = async (id: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await db
         .from('properties')
         .delete()
         .eq('id', id)
         .eq('owner_id', user?.id);
-
       if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Property deleted successfully",
-      });
-      
+      toast({ title: "Success", description: "Property deleted successfully" });
       await fetchUserProperties();
     } catch (error) {
       console.error('Error deleting property:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete property",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to delete property", variant: "destructive" });
     } finally {
       setLoading(false);
     }
   };
 
-  // Save/unsave property
   const toggleSaveProperty = async (propertyId: string) => {
     if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to save properties",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "You must be logged in to save properties", variant: "destructive" });
       return;
     }
-
     try {
-      // Check if already saved
-      const { data: existing } = await supabase
+      const { data: existing } = await db
         .from('saved_properties')
         .select('id')
         .eq('user_id', user.id)
@@ -351,75 +248,32 @@ export const useProperties = () => {
         .single();
 
       if (existing) {
-        // Remove from saved
-        const { error } = await supabase
-          .from('saved_properties')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('property_id', propertyId);
-
+        const { error } = await db.from('saved_properties').delete().eq('user_id', user.id).eq('property_id', propertyId);
         if (error) throw error;
-        
-        toast({
-          title: "Removed",
-          description: "Property removed from saved list",
-        });
+        toast({ title: "Removed", description: "Property removed from saved list" });
       } else {
-        // Add to saved
-        const { error } = await supabase
-          .from('saved_properties')
-          .insert([{
-            user_id: user.id,
-            property_id: propertyId
-          }]);
-
+        const { error } = await db.from('saved_properties').insert([{ user_id: user.id, property_id: propertyId }]);
         if (error) throw error;
-        
-        toast({
-          title: "Saved",
-          description: "Property added to saved list",
-        });
+        toast({ title: "Saved", description: "Property added to saved list" });
       }
-      
       await fetchSavedProperties();
     } catch (error) {
       console.error('Error toggling save property:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save/unsave property",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to save/unsave property", variant: "destructive" });
     }
   };
 
-  // Check if property is saved
   const isPropertySaved = (propertyId: string) => {
     return savedProperties.some(prop => prop.id === propertyId);
   };
 
-  useEffect(() => {
-    fetchProperties();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      fetchUserProperties();
-      fetchSavedProperties();
-    }
-  }, [user]);
+  useEffect(() => { fetchProperties(); }, []);
+  useEffect(() => { if (user) { fetchUserProperties(); fetchSavedProperties(); } }, [user]);
 
   return {
-    properties,
-    userProperties,
-    savedProperties,
-    loading,
-    fetchProperties,
-    fetchUserProperties,
-    fetchSavedProperties,
-    createProperty,
-    updateProperty,
-    deleteProperty,
-    toggleSaveProperty,
-    isPropertySaved
+    properties, userProperties, savedProperties, loading,
+    fetchProperties, fetchUserProperties, fetchSavedProperties,
+    createProperty, updateProperty, deleteProperty,
+    toggleSaveProperty, isPropertySaved
   };
 };
