@@ -82,7 +82,7 @@ const PropertyDetail = () => {
         }
 
         // Otherwise use public view
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from('public_properties')
           .select('*')
           .eq('id', id)
