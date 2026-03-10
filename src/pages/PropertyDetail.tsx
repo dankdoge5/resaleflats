@@ -67,7 +67,7 @@ const PropertyDetail = () => {
       try {
         // First try to get full property details if user owns it
         if (user) {
-          const { data: ownedProperty } = await supabase
+          const { data: ownedProperty } = await db
             .from('properties')
             .select('*')
             .eq('id', id)
