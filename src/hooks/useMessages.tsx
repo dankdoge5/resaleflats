@@ -68,10 +68,10 @@ export const useMessages = () => {
           const participants: ThreadParticipant[] = [];
           if (participantData) {
             for (const p of participantData) {
-              const { data: profile } = await supabase
-                .from('profiles')
+              const { data: profile } = await (supabase
+                .from('profiles') as any)
                 .select('full_name')
-                .eq('user_id', p.user_id)
+                .eq('id', p.user_id)
                 .maybeSingle();
               
               participants.push({
