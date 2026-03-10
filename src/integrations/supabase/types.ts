@@ -14,13 +14,403 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          property_id: string
+          property_owner_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          property_id: string
+          property_owner_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          property_id?: string
+          property_owner_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "public_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: number
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: never
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: never
+          title?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          metadata: Json | null
+          sender_id: string
+          thread_id: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: never
+          metadata?: Json | null
+          sender_id: string
+          thread_id: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: never
+          metadata?: Json | null
+          sender_id?: string
+          thread_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          notified_at: string | null
+          property_id: string
+          target_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notified_at?: string | null
+          property_id: string
+          target_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notified_at?: string | null
+          property_id?: string
+          target_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_alerts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_alerts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "public_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          amenities: string[] | null
+          area_sqft: number | null
+          bathrooms: number
+          bedrooms: number
+          created_at: string
+          description: string | null
+          furnished_status: string
+          has_balcony: boolean | null
+          has_parking: boolean | null
+          id: string
+          image_urls: string[] | null
+          is_active: boolean
+          location: string
+          owner_id: string
+          price: number
+          property_age: string | null
+          property_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          area_sqft?: number | null
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string
+          description?: string | null
+          furnished_status?: string
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
+          id?: string
+          image_urls?: string[] | null
+          is_active?: boolean
+          location: string
+          owner_id: string
+          price: number
+          property_age?: string | null
+          property_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[] | null
+          area_sqft?: number | null
+          bathrooms?: number
+          bedrooms?: number
+          created_at?: string
+          description?: string | null
+          furnished_status?: string
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
+          id?: string
+          image_urls?: string[] | null
+          is_active?: boolean
+          location?: string
+          owner_id?: string
+          price?: number
+          property_age?: string | null
+          property_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_properties: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "public_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      thread_participants: {
+        Row: {
+          id: number
+          joined_at: string
+          thread_id: number
+          user_id: string
+        }
+        Insert: {
+          id?: never
+          joined_at?: string
+          thread_id: number
+          user_id: string
+        }
+        Update: {
+          id?: never
+          joined_at?: string
+          thread_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thread_participants_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      public_properties: {
+        Row: {
+          amenities: string[] | null
+          area_sqft: number | null
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string | null
+          description: string | null
+          furnished_status: string | null
+          has_balcony: boolean | null
+          has_parking: boolean | null
+          id: string | null
+          image_urls: string[] | null
+          is_active: boolean | null
+          location: string | null
+          price: number | null
+          property_age: string | null
+          property_type: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          area_sqft?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          description?: string | null
+          furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
+          id?: string | null
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          property_age?: string | null
+          property_type?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          area_sqft?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          description?: string | null
+          furnished_status?: string | null
+          has_balcony?: boolean | null
+          has_parking?: boolean | null
+          id?: string | null
+          image_urls?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          property_age?: string | null
+          property_type?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      check_rate_limit: {
+        Args: {
+          _action_type: string
+          _block_duration_ms: number
+          _identifier: string
+          _max_attempts: number
+          _window_ms: number
+        }
+        Returns: Json
+      }
+      get_approved_contact_info: {
+        Args: { contact_request_id: string }
+        Returns: {
+          full_name: string
+          phone: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
