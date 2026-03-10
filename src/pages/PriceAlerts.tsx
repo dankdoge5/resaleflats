@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Bell, Trash2, ArrowLeft, TrendingDown, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { db } from '@/integrations/supabase/helpers';
-import { supabase } from '@/integrations/supabase/client';
+
 
 interface PropertyInfo {
   id: string;
