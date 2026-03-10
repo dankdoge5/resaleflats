@@ -91,7 +91,7 @@ const PropertyDetail = () => {
         if (error) throw error;
 
         // Fetch owner_id separately for messaging
-        const { data: propertyData } = await supabase
+        const { data: propertyData } = await db
           .from('properties')
           .select('owner_id')
           .eq('id', id)

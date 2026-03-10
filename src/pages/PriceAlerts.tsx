@@ -29,7 +29,7 @@ const PriceAlerts = () => {
       if (alerts.length === 0) return;
 
       const propertyIds = [...new Set(alerts.map(alert => alert.property_id))];
-      const { data } = await supabase
+      const { data } = await db
         .from('public_properties')
         .select('id, title, price, location')
         .in('id', propertyIds);
