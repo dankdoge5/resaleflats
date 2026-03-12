@@ -8,8 +8,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
-import { useCaptcha } from "@/hooks/useCaptcha";
-import { useServerRateLimit } from "@/hooks/useServerRateLimit";
 import { toast } from "@/hooks/use-toast";
 import { signupSchema } from "@/lib/validations";
 
