@@ -21,8 +21,6 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp, user } = useAuth();
-  const { verifyCaptcha } = useCaptcha();
-  const { checkRateLimit } = useServerRateLimit();
   const navigate = useNavigate();
 
   useEffect(() => {
