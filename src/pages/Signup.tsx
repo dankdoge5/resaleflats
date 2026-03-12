@@ -55,10 +55,11 @@ const Signup = () => {
     try {
       const { error } = await signUp(email, password, fullName, phone);
       if (error) {
+        console.error("Signup error:", error);
         toast({
           variant: "destructive",
           title: "Signup Failed",
-          description: "Unable to create account. Please try again.",
+          description: error.message || "Unable to create account. Please try again.",
         });
       } else {
         toast({
