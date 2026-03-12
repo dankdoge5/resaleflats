@@ -53,36 +53,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // Check server-side rate limiting
-      const rateLimitCheck = await checkRateLimit(email, 'signup', {
-        maxAttempts: 3,
-        windowMs: 60 * 60 * 1000, // 1 hour
-        blockDurationMs: 2 * 60 * 60 * 1000, // 2 hours
-      });
-
-      if (!rateLimitCheck.allowed) {
-        const resetTime = rateLimitCheck.resetTime ? new Date(rateLimitCheck.resetTime).toLocaleTimeString() : 'later';
-        toast({
-          variant: "destructive",
-          title: "Too Many Attempts",
-          description: `Please try again after ${resetTime}`,
-        });
-        return;
-      }
-
-      // Verify CAPTCHA
-      const captchaVerified = await verifyCaptcha('signup');
-      
-      if (!captchaVerified) {
-        toast({
-          variant: "destructive",
-          title: "Security Check Failed",
-          description: "Please try again. If the problem persists, refresh the page.",
-        });
-        return;
-      }
-
-      const { error } = await signUp(email, password, fullName, captchaVerified);
+      const { error } = await signUp(email, password, fullName);
       if (error) {
         toast({
           variant: "destructive",
