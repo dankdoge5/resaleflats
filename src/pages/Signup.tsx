@@ -53,7 +53,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const { error } = await signUp(email, password, fullName);
+      const { error } = await signUp(email, password, fullName, phone);
       if (error) {
         toast({
           variant: "destructive",
