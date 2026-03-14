@@ -161,10 +161,6 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
                   <Button variant="outline" size="sm" onClick={handleViewProperty}>
                     View Details
                   </Button>
-                  <Button variant="default" size="sm" className="gap-1" onClick={handleContactOwner}>
-                    <Phone className="h-4 w-4" />
-                    Contact
-                  </Button>
                 </div>
               </div>
             </div>
