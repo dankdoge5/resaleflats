@@ -48,14 +48,6 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
     navigate(`/property/${property.id}`);
   };
 
-  const handleContactOwner = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    // TODO: Implement contact functionality for authenticated users
-  };
 
   const formatPrice = (price: number | string) => {
     if (typeof price === 'string') return price;
