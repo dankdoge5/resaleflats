@@ -33,8 +33,12 @@ const Index = () => {
   }, [properties]);
 
   const handleSearch = (filters: any) => {
-    // This will be handled by the useProperties hook automatically
-    console.log('Search filters:', filters);
+    const params = new URLSearchParams();
+    if (filters.location) params.set('location', filters.location);
+    if (filters.property_type) params.set('type', filters.property_type);
+    if (filters.min_price) params.set('min', filters.min_price.toString());
+    if (filters.max_price) params.set('max', filters.max_price.toString());
+    navigate(`/properties?${params.toString()}`);
   };
   const featuredProperties = [
     {
