@@ -1,10 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Bed, Bath, Square, Heart, Check } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Heart, Check, Phone } from "lucide-react";
 import { useProperties } from "@/hooks/useProperties";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { ContactRequestDialog } from "@/components/ContactRequestDialog";
 
 interface Property {
   id: string;
