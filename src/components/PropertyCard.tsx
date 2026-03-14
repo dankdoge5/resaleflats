@@ -273,6 +273,21 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
             <div className="text-2xl font-bold text-primary">
               ₹{formatPrice(property.price)}
             </div>
+            {property.owner_id && (
+              <ContactRequestDialog
+                propertyId={property.id}
+                propertyOwnerId={property.owner_id}
+                propertyTitle={property.title}
+              >
+                <Button variant="outline" size="sm" className="gap-1" onClick={(e) => {
+                  e.stopPropagation();
+                  if (!user) { navigate('/login'); }
+                }}>
+                  <Phone className="h-4 w-4" />
+                  Contact
+                </Button>
+              </ContactRequestDialog>
+            )}
           </div>
         </div>
         </CardContent>
