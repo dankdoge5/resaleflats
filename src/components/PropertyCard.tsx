@@ -162,6 +162,21 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
                   <Button variant="outline" size="sm" onClick={handleViewProperty}>
                     View Details
                   </Button>
+                  {property.owner_id && (
+                    <ContactRequestDialog
+                      propertyId={property.id}
+                      propertyOwnerId={property.owner_id}
+                      propertyTitle={property.title}
+                    >
+                      <Button variant="default" size="sm" className="gap-1" onClick={(e) => {
+                        e.stopPropagation();
+                        if (!user) { navigate('/login'); }
+                      }}>
+                        <Phone className="h-4 w-4" />
+                        Contact
+                      </Button>
+                    </ContactRequestDialog>
+                  )}
                 </div>
               </div>
             </div>
