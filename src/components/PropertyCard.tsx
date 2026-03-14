@@ -257,10 +257,6 @@ export const PropertyCard = ({ property, showSaveButton = true, viewMode = "grid
             <div className="text-2xl font-bold text-primary">
               ₹{formatPrice(property.price)}
             </div>
-            <Button variant="outline" size="sm" className="gap-1" onClick={handleContactOwner}>
-              <Phone className="h-4 w-4" />
-              Contact
-            </Button>
           </div>
         </div>
         </CardContent>
