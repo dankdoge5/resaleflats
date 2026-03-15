@@ -22,6 +22,7 @@ export const useContactRequests = () => {
   const [myRequests, setMyRequests] = useState<ContactRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<ContactRequest[]>([]);
   const { user } = useAuth();
+  const { createThread } = useMessages();
 
   const createContactRequest = async (propertyId: string, propertyOwnerId: string, message?: string) => {
     if (!user) {
