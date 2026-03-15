@@ -58,7 +58,17 @@ export const useContactRequests = () => {
     try {
       const { error } = await db.from('contact_requests').update({ status }).eq('id', requestId).eq('property_owner_id', user.id);
       if (error) throw error;
-      toast({ title: status === 'approved' ? "Request Approved" : "Request Denied", description: `Contact request has been ${status}.` });
+
+      // Auto-create message thread when approved
+      if (status === 'approved') {
+        const request = receivedRequests.find(r => r.id === requestId);
+        if (request) {
+          const propertyTitle = request.property?.title || 'Property';
+          await createThread(`Re: ${propertyTitle}`, [request.requester_id]);
+        }
+      }
+
+      toast({ title: status === 'approved' ? "Request Approved" : "Request Denied", description: `Contact request has been ${status}.${status === 'approved' ? ' A message thread has been created.' : ''}` });
       await fetchReceivedRequests();
       return true;
     } catch (error) {
