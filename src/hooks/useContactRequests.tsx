@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { db } from '@/integrations/supabase/helpers';
 import { useAuth } from './useAuth';
 import { toast } from './use-toast';
+import { useMessages } from './useMessages';
 
 export interface ContactRequest {
   id: string;
